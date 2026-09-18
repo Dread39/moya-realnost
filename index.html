@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Моя реальность</title>
+<meta name="theme-color" content="#06120C">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700&family=Lora:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#F4F0E6; --bg2:#EAE4D6; --surface:rgba(255,255,255,.7); --solid:#FBF8F1; --line:rgba(40,60,45,.13);
+  --ink:#16261C; --muted:#5E6E63; --gold-ink:#1A1206; --nav:rgba(244,240,230,.9); --scrim:rgba(20,30,24,.45);
+  --joy:#C98A1E; --grow:#2F7A55; --love:#D0644F; --calm:#3B7FA8; --hard:#9A6A43;
+  --glow:rgba(201,138,30,.24); --soft:rgba(201,138,30,.14);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#06120C; --bg2:#0B1D14; --surface:rgba(20,44,31,.58); --solid:#0E2118; --line:rgba(160,220,180,.11);
+  --ink:#EEF3EC; --muted:#8FA898; --gold-ink:#1A1206; --nav:rgba(6,18,12,.86); --scrim:rgba(0,0,0,.6);
+  --joy:#F3BE4E; --grow:#5FD39A; --love:#FF8A75; --calm:#7CC4EC; --hard:#C9926A;
+  --glow:rgba(243,190,78,.22); --soft:rgba(243,190,78,.12);
+}}
+:root[data-theme="dark"]{
+  --bg:#06120C; --bg2:#0B1D14; --surface:rgba(20,44,31,.58); --solid:#0E2118; --line:rgba(160,220,180,.11);
+  --ink:#EEF3EC; --muted:#8FA898; --gold-ink:#1A1206; --nav:rgba(6,18,12,.86); --scrim:rgba(0,0,0,.6);
+  --joy:#F3BE4E; --grow:#5FD39A; --love:#FF8A75; --calm:#7CC4EC; --hard:#C9926A;
+  --glow:rgba(243,190,78,.22); --soft:rgba(243,190,78,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;min-height:100%}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--joy);outline-offset:3px}
+.c-joy{color:var(--joy)}.c-grow{color:var(--grow)}.c-love{color:var(--love)}.c-calm{color:var(--calm)}.c-hard{color:var(--hard)}
+
+.screen{display:none;width:100%;max-width:430px;margin:0 auto;min-height:100vh;position:relative;padding:16px 16px 118px;
+  background:radial-gradient(130% 55% at 50% 12%,var(--bg2) 0%,var(--bg) 72%)}
+.screen.active{display:block}
+.head{display:flex;justify-content:space-between;align-items:center;margin:2px 2px 12px;gap:10px}
+.head h1{font-family:Unbounded,sans-serif;font-size:22px;font-weight:700}
+.head small{display:block;font-size:13px;color:var(--muted)}
+.head .hello b{font-size:17px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--joy);background:var(--soft);border:1px solid var(--line);padding:7px 11px;border-radius:999px}
+.sec{display:flex;justify-content:space-between;align-items:baseline;margin:18px 2px 10px;gap:8px}
+.sec h2{font-size:15px;font-weight:700}
+.sec span,.sec button.link{font-size:12px;color:var(--muted);background:none;border:none}
+.sec button.link{color:var(--joy);font-weight:800}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:16px;margin-bottom:12px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.muted{color:var(--muted)}
+.btn{display:block;width:100%;border:none;border-radius:18px;padding:15px;font-weight:800;font-size:15px;background:var(--joy);color:var(--gold-ink);box-shadow:0 0 26px var(--glow)}
+.btn[disabled]{opacity:.45;box-shadow:none}
+.ghost{display:block;width:100%;border:1px solid var(--line);border-radius:18px;padding:14px;font-weight:700;font-size:15px;background:transparent}
+.small-btn{border:none;border-radius:999px;padding:8px 13px;font-weight:800;font-size:13px;background:var(--joy);color:var(--gold-ink)}
+.row{display:flex;gap:10px;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.empty{text-align:center;padding:26px 16px;color:var(--muted);font-size:14px;line-height:1.5}
+.empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
+
+/* чипы и выбор */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;background:transparent;border:1px solid var(--line);border-radius:14px;padding:9px 12px;text-align:left}
+.chip i{width:8px;height:8px;border-radius:50%;background:var(--dot,var(--muted));flex:none}
+.chip[aria-pressed="true"]{background:var(--soft);border-color:var(--joy);color:var(--ink)}
+.chip.add{border-style:dashed;color:var(--muted)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px}
+.seg button{font-size:13px;font-weight:700;color:var(--muted);background:none;border:none;border-radius:10px;padding:9px 4px}
+.seg button[aria-pressed="true"]{background:var(--joy);color:var(--gold-ink)}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:13px 14px;margin-bottom:8px;font-size:15px;font-weight:600}
+.opt small{display:block;font-size:12px;color:var(--muted);font-weight:500;margin-top:2px}
+.opt .dot{width:12px;height:12px;border-radius:50%;flex:none;background:var(--dot,var(--muted));box-shadow:0 0 8px var(--dot,transparent)}
+.opt[aria-pressed="true"]{border-color:var(--joy);background:var(--soft)}
+.opt .ck{margin-left:auto;width:22px;height:22px;border-radius:7px;border:1.5px solid var(--line);display:grid;place-items:center;flex:none}
+.opt[aria-pressed="true"] .ck{background:var(--joy);border-color:var(--joy);color:var(--gold-ink)}
+.opt .ck svg{width:14px;height:14px;opacity:0}
+.opt[aria-pressed="true"] .ck svg{opacity:1}
+.field{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:13px 14px;font-size:15px;outline:none}
+textarea.field{min-height:84px;resize:vertical;line-height:1.5}
+
+/* задачи дня */
+.task{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.task:last-child{border-bottom:none}
+.tick{width:26px;height:26px;border-radius:9px;border:1.8px solid var(--muted);display:grid;place-items:center;flex:none;background:transparent;color:var(--gold-ink)}
+.tick svg{width:15px;height:15px;opacity:0}
+.task.done .tick{background:var(--joy);border-color:var(--joy)}
+.task.done .tick svg{opacity:1}
+.task .tx{flex:1;min-width:0}
+.task .tx b{display:block;font-size:15px;font-weight:600}
+.task.done .tx b{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+.task .tx small{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-top:2px}
+.task .tx small i{width:7px;height:7px;border-radius:50%;background:var(--dot)}
+.task .x{background:none;border:none;color:var(--muted);font-size:18px;padding:4px 6px}
+.main{display:flex;align-items:center;gap:14px;border-color:var(--joy)}
+.main .ic{width:46px;height:46px;border-radius:14px;flex:none;display:grid;place-items:center;background:linear-gradient(145deg,var(--joy),#E9A93A);color:var(--gold-ink)}
+.main .ic svg{width:22px;height:22px}
+.main .tx{flex:1;min-width:0}
+.main small{font-size:12px;color:var(--muted)}
+.main b{display:block;font-size:16px;font-weight:700;margin-top:2px;line-height:1.3}
+.main .go{width:48px;height:48px;border-radius:50%;border:none;flex:none;background:var(--joy);color:var(--gold-ink);display:grid;place-items:center;box-shadow:0 0 24px var(--glow)}
+.main .go svg{width:20px;height:20px}
+.main.done{border-color:var(--grow)}
+.main.done .go{background:var(--grow)}
+.banner{border-radius:18px;padding:12px 14px;font-size:14px;line-height:1.45;margin-bottom:12px;background:var(--soft);border:1px solid var(--line)}
+.banner.calm{background:color-mix(in srgb,var(--calm) 14%,transparent)}
+.banner button{margin-top:8px}
+
+/* мир дня */
+.world{position:relative;height:300px;margin:0 -16px}
+.world canvas{width:100%;height:100%;display:block}
+.world .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.world .n{font-family:Unbounded,sans-serif;font-weight:700;font-size:52px;line-height:1;text-shadow:0 0 30px var(--glow)}
+.world .l{font-size:13px;color:var(--muted);margin-top:8px}
+.world .lv{margin-top:8px;font-size:12px;font-weight:700;color:var(--joy)}
+.moods{display:flex;gap:8px;justify-content:center;margin:0 0 14px}
+.moods button{font-size:13px;font-weight:600;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px}
+.moods button[aria-pressed="true"]{color:var(--gold-ink);background:var(--joy);border-color:var(--joy)}
+
+/* путь */
+.goals{display:flex;gap:8px;overflow-x:auto;margin:0 -16px 12px;padding:0 16px 2px;scrollbar-width:none}
+.goals::-webkit-scrollbar{display:none}
+.goalchip{flex:none;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 13px 8px 9px}
+.goalchip i{width:10px;height:10px;border-radius:50%;background:var(--dot);box-shadow:0 0 8px var(--dot)}
+.goalchip[aria-pressed="true"]{color:var(--ink);border-color:var(--dot);background:var(--soft)}
+.mount{position:relative;height:390px;margin:0 -16px;overflow:hidden;border-radius:0 0 28px 28px}
+.mount canvas{width:100%;height:100%;display:block}
+.pin{position:absolute;transform:translate(-50%,-100%);pointer-events:none;background:rgba(8,20,14,.74);color:#F4F1E6;border:1px solid rgba(243,190,78,.45);border-radius:12px;padding:6px 10px;font-size:12px;font-weight:700;white-space:nowrap;backdrop-filter:blur(8px)}
+.pin small{display:block;font-size:11px;font-weight:500;color:rgba(244,241,230,.7)}
+.pin:after{content:"";position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);border:6px solid transparent;border-top-color:rgba(8,20,14,.74);border-bottom:0}
+.mount .ov{position:absolute;left:16px;right:16px;top:14px;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;color:#F4F1E6}
+.mount .ov b{font-family:Unbounded,sans-serif;font-size:30px;line-height:1;text-shadow:0 0 22px rgba(243,190,78,.35)}
+.mount .ov small{display:block;font-size:12px;color:rgba(244,241,230,.72);margin-top:4px}
+.camps{display:flex;gap:6px;overflow-x:auto;margin:14px -16px 6px;padding:0 16px 4px;scrollbar-width:none}
+.camps::-webkit-scrollbar{display:none}
+.camp{flex:none;width:136px;border-radius:16px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);font-size:13px;display:flex;flex-direction:column;gap:4px}
+.camp small{font-size:11px;color:var(--muted)}
+.camp b{font-weight:700;line-height:1.3}
+.camp.done small{color:var(--joy)}
+.camp.now{border-color:var(--joy);box-shadow:0 0 0 1px var(--joy) inset}
+.camp.now small{color:var(--joy);font-weight:700}
+.camp.next b{color:var(--muted)}
+.camp button{margin-top:auto;border:none;border-radius:10px;padding:7px 8px;font-size:12px;font-weight:800;background:var(--joy);color:var(--gold-ink)}
+.today{display:flex;gap:12px;align-items:center}
+.today .tx{flex:1}
+.today small{font-size:12px;color:var(--muted)}
+.today b{display:block;font-size:16px;margin-top:2px;line-height:1.3}
+.stepBtn{flex:none;width:64px;height:64px;border-radius:50%;border:none;background:var(--joy);color:var(--gold-ink);font-weight:800;font-size:12px;display:grid;place-items:center;box-shadow:0 0 28px var(--glow);line-height:1.1}
+.stepBtn svg{width:22px;height:22px;display:block;margin:0 auto 2px}
+.meter .rw{display:flex;justify-content:space-between;font-size:13px;gap:8px}
+.meter .rw span{color:var(--muted)}
+.meter+.meter{margin-top:14px}
+.track{height:8px;border-radius:4px;background:var(--line);margin-top:7px;overflow:hidden}
+.track i{display:block;height:100%;border-radius:4px;transition:width .9s cubic-bezier(.3,.8,.3,1)}
+.ev{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.ev:last-child{border-bottom:none;padding-bottom:0}
+.ev:first-child{padding-top:0}
+.ev .d{width:10px;height:10px;border-radius:50%;margin-top:5px;flex:none;background:currentColor;box-shadow:0 0 8px currentColor}
+.ev .tx{flex:1}
+.ev b{font-size:14px;font-weight:700;color:var(--ink)}
+.ev small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.ev time{font-size:12px;color:var(--muted);flex:none}
+.lesson{display:inline-block;margin-top:6px;font-size:12px;font-weight:600;padding:4px 8px;border-radius:9px;border:1px solid var(--line);color:var(--ink)}
+
+/* вершины */
+.peakcard{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:14px;margin-bottom:10px}
+.peakcard.closed{border-color:var(--joy);background:linear-gradient(135deg,var(--soft),var(--surface))}
+.peakcard svg.mini{width:62px;height:46px;flex:none}
+.peakcard .tx{flex:1;min-width:0}
+.peakcard b{font-size:15px;display:block}
+.peakcard small{font-size:12px;color:var(--muted)}
+
+/* история */
+.book{position:relative;border-radius:26px;overflow:hidden;margin-bottom:14px;border:1px solid var(--line);background:linear-gradient(160deg,#0F2A1D 0%,#0A1A12 55%,#1A1408 100%);color:#F4F1E6}
+.book .in{position:relative;padding:18px 18px 16px 22px}
+.book .spine{position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(#F3BE4E,#C98A1E)}
+.book small{font-size:12px;color:rgba(244,241,230,.65)}
+.book h2{font-family:Lora,serif;font-weight:500;font-size:25px;line-height:1.15;margin:6px 0 2px}
+.book h2 em{color:#F3BE4E}
+.book .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px}
+.book .nums div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:9px 4px;text-align:center}
+.book .nums b{display:block;font-family:Unbounded,sans-serif;font-size:15px}
+.book .nums span{font-size:10px;color:rgba(244,241,230,.65)}
+.flow{position:relative;border-radius:22px;background:var(--surface);border:1px solid var(--line);overflow:hidden}
+.flow canvas{display:block;width:100%;height:160px}
+.flow .ft{display:flex;justify-content:space-between;padding:0 14px 12px;font-size:11px;color:var(--muted)}
+.filters{display:flex;gap:8px;overflow-x:auto;margin:14px -16px 4px;padding:0 16px 2px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.month h3{font-family:Lora,serif;font-weight:500;font-size:20px;margin:20px 2px 10px}
+.e{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-bottom:10px}
+.e .meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:6px}
+.e .meta i{width:8px;height:8px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+.e h4{font-size:15px;font-weight:700;line-height:1.35}
+.e p{font-size:13px;color:var(--muted);line-height:1.5;margin-top:4px}
+.e.peak{border-color:var(--joy);background:linear-gradient(135deg,var(--soft),var(--surface))}
+.e q{display:block;font-family:Lora,serif;font-style:italic;font-size:17px;line-height:1.5;quotes:none}
+
+/* профиль */
+.portrait{position:relative;overflow:hidden;border-radius:26px;padding:18px;margin-bottom:12px;color:#F4F1E6;background:radial-gradient(120% 90% at 85% 0%,#2A3D62 0%,#0F1E2E 45%,#08140F 100%);border:1px solid var(--line)}
+.portrait small{font-size:12px;color:rgba(244,241,230,.65)}
+.portrait h3{font-family:Lora,serif;font-weight:500;font-size:23px;margin:6px 0 8px}
+.portrait h3 em{color:#F3BE4E}
+.portrait p{font-size:14px;line-height:1.55;color:rgba(244,241,230,.86)}
+.portrait .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.portrait .tags span{font-size:12px;font-weight:700;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:5px 10px}
+.portrait .note{display:block;margin-top:10px;font-size:11px;color:rgba(244,241,230,.5)}
+.stars{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1.2px 1.2px at 12% 20%,#fff8 50%,transparent 51%),radial-gradient(1px 1px at 72% 12%,#fff9 50%,transparent 51%),radial-gradient(1.4px 1.4px at 88% 34%,#F3BE4E 50%,transparent 51%),radial-gradient(1px 1px at 40% 8%,#fff7 50%,transparent 51%),radial-gradient(1.2px 1.2px at 60% 26%,#fff6 50%,transparent 51%),radial-gradient(1px 1px at 22% 62%,#fff5 50%,transparent 51%),radial-gradient(1.3px 1.3px at 80% 70%,#fff6 50%,transparent 51%)}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.st{border-radius:18px;padding:12px;background:var(--surface);border:1px solid var(--line)}
+.st b{display:block;font-family:Unbounded,sans-serif;font-size:19px}
+.st span{font-size:11px;color:var(--muted)}
+.wheelBox{position:relative}
+.wheelBox svg{display:block;width:100%;height:auto}
+.wheelBox .mid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
+.wheelBox .mid b{display:block;font-family:Unbounded,sans-serif;font-size:24px}
+.wheelBox .mid span{font-size:11px;color:var(--muted)}
+.lbl{font-family:Manrope,sans-serif;font-size:10.5px;font-weight:700;fill:var(--muted);cursor:pointer}
+.lbl.on{fill:var(--ink)}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper button{width:36px;height:36px;border-radius:12px;border:1px solid var(--line);background:transparent;font-size:18px;font-weight:700}
+.stepper output{font-family:Unbounded,sans-serif;font-size:18px;min-width:28px;text-align:center}
+.set{display:flex;align-items:center;justify-content:space-between;padding:13px 2px;border-bottom:1px solid var(--line);font-size:14px;width:100%;background:none;border-left:none;border-right:none;border-top:none;text-align:left}
+.set:last-child{border-bottom:none}
+.set span{color:var(--muted);font-size:13px}
+.sw{position:relative;width:46px;height:28px;border-radius:14px;background:var(--line);border:none;flex:none}
+.sw:after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.sw[aria-checked="true"]{background:var(--grow)}
+.sw[aria-checked="true"]:after{transform:translateX(18px)}
+.orb{width:46px;height:46px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 30%,#FFE8B0,var(--joy) 45%,#6B4A10 100%);box-shadow:0 0 24px var(--glow)}
+
+/* лист, чат, тост, вкладки */
+.scrim{position:fixed;inset:0;background:var(--scrim);opacity:0;pointer-events:none;transition:opacity .3s;z-index:40}
+.sheet{position:fixed;left:50%;bottom:0;width:100%;max-width:430px;max-height:88vh;overflow-y:auto;transform:translate(-50%,105%);visibility:hidden;transition:transform .36s cubic-bezier(.3,.8,.3,1),visibility 0s .36s;background:var(--solid);border-radius:26px 26px 0 0;padding:10px 18px calc(24px + env(safe-area-inset-bottom));z-index:41;border-top:1px solid var(--line)}
+body.sheet-open .scrim{opacity:1;pointer-events:auto}
+body.sheet-open .sheet{transform:translate(-50%,0);visibility:visible;transition:transform .36s cubic-bezier(.3,.8,.3,1)}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
+.sheetX{position:absolute;right:12px;top:8px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font-size:20px;line-height:1;color:var(--muted)}
+.sheet h3{font-size:19px;font-weight:800;margin-bottom:4px;line-height:1.25}
+.sheet .lead{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+.sheet label.q{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:14px 0 8px}
+.msgs{display:flex;flex-direction:column;gap:8px;min-height:180px;max-height:48vh;overflow-y:auto;padding:6px 0 10px}
+.m{max-width:86%;font-size:14px;line-height:1.5;padding:10px 12px;border-radius:16px;white-space:pre-wrap}
+.m.u{align-self:flex-end;background:var(--joy);color:var(--gold-ink);border-bottom-right-radius:6px}
+.m.a{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:6px}
+.m.wait{color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:100px;transform:translate(-50%,20px);opacity:0;background:var(--joy);color:var(--gold-ink);font-weight:700;font-size:14px;padding:10px 16px;border-radius:999px;transition:.35s;pointer-events:none;z-index:60;max-width:92vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;display:flex;justify-content:space-around;padding:10px 6px calc(14px + env(safe-area-inset-bottom));background:var(--nav);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--line);z-index:30}
+.tab{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--muted);background:none;border:none;padding:2px 6px;min-width:56px}
+.tab svg{width:22px;height:22px}
+.tab[aria-current="page"]{color:var(--joy)}
+body.onb .tabs,body.onb .screen{display:none!important}
+
+/* онбординг */
+#onb{display:none;max-width:430px;margin:0 auto;min-height:100vh;padding:18px 18px 28px;flex-direction:column;background:radial-gradient(120% 60% at 50% 0%,var(--bg2),var(--bg) 70%)}
+body.onb #onb{display:flex}
+.onbTop{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.onbTop button{background:none;border:none;color:var(--muted);font-size:14px;padding:4px 0}
+.prog{flex:1;height:4px;border-radius:2px;background:var(--line);overflow:hidden}
+.prog i{display:block;height:100%;background:var(--joy);transition:width .4s}
+.onbBody{flex:1}
+.onbBody h2{font-family:Unbounded,sans-serif;font-size:23px;line-height:1.25;margin-bottom:8px}
+.onbBody p.lead{font-size:14px;color:var(--muted);line-height:1.55;margin-bottom:18px}
+.onbFoot{padding-top:14px}
+.hero{height:230px;position:relative;margin:0 -18px 8px}
+.hero canvas{width:100%;height:100%;display:block}
+.suggest{border:1px solid var(--line);background:var(--surface);border-radius:20px;padding:14px;margin-bottom:10px;width:100%;text-align:left;display:block}
+.suggest[aria-pressed="true"]{border-color:var(--joy);background:var(--soft)}
+.suggest b{font-size:15px}
+.suggest small{display:block;font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45}
+.suggest .tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;margin-bottom:6px}
+.suggest .tag i{width:8px;height:8px;border-radius:50%;background:currentColor}
+
+/* празднование */
+#celebrate{position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;display:none}
+body.celebrating #celebrate{display:block}
+body.celebrating .tabs{display:none}
+#celebrate .wrap{max-width:430px;margin:0 auto;padding:14px 16px 40px}
+#celebrate .stage{position:relative;height:440px;margin:0 -16px 14px;overflow:hidden;border-radius:0 0 28px 28px}
+#celebrate .stage canvas{width:100%;height:100%;display:block}
+#celebrate .post{position:absolute;left:0;right:0;bottom:20px;text-align:center;color:#F4F1E6;opacity:0;transform:translateY(10px);transition:opacity .8s,transform .8s;padding:0 20px}
+#celebrate.won .post{opacity:1;transform:none}
+#celebrate .post h1{font-family:Unbounded,sans-serif;font-size:30px;text-shadow:0 0 28px rgba(243,190,78,.4)}
+#celebrate .post p{font-size:14px;color:rgba(244,241,230,.75);margin-top:8px}
+#celebrate .rest{opacity:0;transform:translateY(14px);transition:opacity .9s .3s,transform .9s .3s}
+#celebrate.won .rest{opacity:1;transform:none}
+.bigstats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.bigstats div{border-radius:18px;padding:12px 14px;background:var(--surface);border:1px solid var(--line)}
+.bigstats b{display:block;font-family:Unbounded,sans-serif;font-size:21px}
+.bigstats span{font-size:12px;color:var(--muted)}
+.cbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.cbar button{background:none;border:1px solid var(--line);border-radius:999px;padding:6px 11px;font-size:12px;font-weight:700;color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){.sheet,.scrim,.toast,.track i,#celebrate .post,#celebrate .rest{transition:none}}
+</style>
+</head>
+<body class="onb">
+<div id="onb"><div class="onbTop"><button id="onbBack" data-act="onbBack">← Назад</button><div class="prog"><i id="onbProg"></i></div></div><div class="onbBody" id="onbBody"></div><div class="onbFoot"><button class="btn" id="onbNext" data-act="onbNext">Дальше</button></div></div>
+<main>
+<section class="screen" id="day" aria-label="День"><div class="head" id="dayHead"></div><div class="world"><canvas id="worldCv" aria-hidden="true"></canvas><div class="center" id="worldCenter"></div></div><div id="dayBody"></div></section>
+<section class="screen" id="path" aria-label="Путь"><div class="head"><h1>Путь</h1><button class="small-btn" data-act="addGoal">+ Вершина</button></div><div class="goals" id="goalChips"></div><div class="mount"><canvas id="mountCv" role="img" aria-label="Гора с тропой к вершине: пройденные шаги светятся цветами эмоций"></canvas><div class="pin" id="pin"></div><div class="ov" id="mountOv"></div></div><div id="pathBody"></div></section>
+<section class="screen" id="peaks" aria-label="Вершины"><div class="head"><h1>Вершины</h1></div><div id="peaksBody"></div></section>
+<section class="screen" id="history" aria-label="История"><div class="head"><h1>История</h1><button class="small-btn" data-act="exportBook">Книга</button></div><div class="book" id="bookCover"></div><div class="sec"><h2>Поток жизни</h2><span>из чего складывался путь</span></div><div class="flow"><canvas id="flowCv" role="img" aria-label="Поток жизни по эмоциям: движение, победы, близкие, тишина, трудности"></canvas><div class="ft" id="flowFt"></div></div><div class="filters" id="filters"></div><div id="feed"></div></section>
+<section class="screen" id="profile" aria-label="Профиль"><div id="profileBody"></div></section>
+</main>
+<div id="celebrate"><div class="wrap"><div class="cbar"><button data-act="closeCelebrate">← Закрыть</button><button id="sndBtn" data-act="toggleSound">Звук</button></div><div class="stage"><canvas id="celCv" role="img" aria-label="Подъём на вершину, салют и золотая галочка"></canvas><div class="post"><h1>Ты это сделал</h1><p id="celSub"></p></div></div><div class="rest" id="celRest"></div></div></div>
+<div class="scrim" data-act="closeSheet"></div><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Окно"><div class="grab"></div><button class="sheetX" data-act="closeSheet" aria-label="Закрыть">×</button><div id="sheetBody"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<nav class="tabs" aria-label="Разделы"><button class="tab" data-tab="day" aria-label="День"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/></svg><span>День</span></button><button class="tab" data-tab="path" aria-label="Путь"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="18" r="2"/><circle cx="12" cy="10" r="2"/><circle cx="19" cy="5" r="2"/><path d="M6.5 16.5l4-5M13.5 8.5l4-2.5"/></svg><span>Путь</span></button><button class="tab" data-tab="peaks" aria-label="Вершины"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20l7-12 4 6 2-3 5 9z"/></svg><span>Вершины</span></button><button class="tab" data-tab="history" aria-label="История"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg><span>История</span></button><button class="tab" data-tab="profile" aria-label="Профиль"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>Профиль</span></button></nav>
+<script>
+/* ================= утилиты ================= */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const REDUCE=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const uid=()=>Math.random().toString(36).slice(2,10);
+const fmtN=n=>Math.round(+n||0).toLocaleString('ru-RU');
+const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const rgb=h=>{h=(h||'#888888').replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const v=parseInt(h,16);return[(v>>16)&255,(v>>8)&255,v&255]};
+const rgba=(c,a)=>`rgba(${c[0]},${c[1]},${c[2]},${a})`;
+const mixc=(a,b,k)=>[0,1,2].map(i=>Math.round(a[i]+(b[i]-a[i])*k));
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const clamp01=v=>Math.max(0,Math.min(1,v));
+function word(n,f){const a=Math.abs(n)%10,b=Math.abs(n)%100;if(a===1&&b!==11)return f[0];if(a>=2&&a<=4&&(b<12||b>14))return f[1];return f[2]}
+const W_STEP=['шаг','шага','шагов'], W_DAY=['день','дня','дней'];
+const ICON={
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+  peak:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 20l7-12 4 6 2-3 5 9z"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  flame:'<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 5 5.5 5 10a5 5 0 1 1-10 0c0-2 1-3.5 2-4.5.3 2 1.3 3 2.5 3C11 8 11 5 12 2z"/></svg>'
+};
+
+/* ================= даты ================= */
+const MON_GEN=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const MON_NOM=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const WD=['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+const pad=n=>String(n).padStart(2,'0');
+const dkey=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const kdate=k=>{const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)};
+const addDays=(k,n)=>{const d=kdate(k);d.setDate(d.getDate()+n);return dkey(d)};
+const daysBetween=(a,b)=>Math.round((kdate(b)-kdate(a))/864e5);
+const ruDate=k=>{const d=kdate(k);return `${d.getDate()} ${MON_GEN[d.getMonth()]}`};
+const monthName=k=>{const d=kdate(k);return `${MON_NOM[d.getMonth()]} ${d.getFullYear()}`};
+
+/* ================= сферы жизни ================= */
+const SPHERES=[
+  {id:'health',name:'Здоровье',emo:'grow',group:'Тело и дух',tasks:['Тренировка','Пробежка','Сон до 23:00','Вода утром','Растяжка']},
+  {id:'energy',name:'Энергия',emo:'calm',group:'Тело и дух',tasks:['Прогулка','10 минут тишины','Выезд на природу','Вечер без телефона']},
+  {id:'growth',name:'Рост',emo:'grow',group:'Тело и дух',tasks:['Книга 20 минут','Обучение','Новое место','Хобби']},
+  {id:'parents',name:'Родители',emo:'love',group:'Люди',tasks:['Позвонить маме','Позвонить отцу','Заехать на чай','Помочь родителям']},
+  {id:'partner',name:'Партнёр',emo:'love',group:'Люди',tasks:['Вечер вдвоём','Разговор без телефонов','Маленький сюрприз']},
+  {id:'kids',name:'Дети',emo:'love',group:'Люди',tasks:['Час с ребёнком без телефона','Садик или школа','Прочитать сказку']},
+  {id:'friends',name:'Друзья',emo:'love',group:'Люди',tasks:['Написать другу','Встреча с другом','Помочь другу']},
+  {id:'work',name:'Дело',emo:'joy',group:'Дело и достаток',tasks:['Клиенты','Звонки','Главный проект','Договор','Контент']},
+  {id:'money',name:'Деньги',emo:'joy',group:'Дело и достаток',tasks:['Отложить к цели','Записать траты','Проверить подписки']},
+  {id:'home',name:'Дом',emo:'joy',group:'Дело и достаток',tasks:['Уборка','Документы','Продукты','Мойка и заправка']}
+];
+const SPH=Object.fromEntries(SPHERES.map(s=>[s.id,s]));
+const EMO_NAME={grow:'движение',joy:'победы',love:'близкие',calm:'тишина',hard:'опыт через трудность'};
+
+/* ================= библиотека целей ================= */
+const LIB=[
+  {id:'land',name:'Свой участок под дом',sphere:'home',why:'Своя земля — фундамент для семьи',stages:['Район выбран','Участки посмотрены','Документы проверены','Сумма накоплена','Сделка'],steps:['Составить список районов','Посмотреть 3 объявления','Узнать про документы'],money:1500000,tags:['dream:house','worry:money']},
+  {id:'car',name:'Машина без кредита',sphere:'home',why:'Свобода передвижения без долгов',stages:['Модель выбрана','Половина суммы','Вся сумма','Машина проверена','Покупка'],steps:['Сравнить 3 модели','Отложить к машине'],money:900000,tags:['dream:house']},
+  {id:'flat',name:'Первый взнос за квартиру',sphere:'money',why:'Своё жильё и спокойствие',stages:['Сумма и банк понятны','25% взноса','50% взноса','75% взноса','Взнос собран'],steps:['Узнать условия в 2 банках','Отложить к взносу'],money:1200000,tags:['dream:house','worry:money']},
+  {id:'fund',name:'Подушка безопасности на 3 месяца',sphere:'money',why:'Спокойствие, если что-то пойдёт не так',stages:['Расходы посчитаны','Отдельный счёт открыт','Запас на 1 месяц','Запас на 2 месяца','Запас на 3 месяца'],steps:['Записать траты за неделю','Найти одну лишнюю подписку'],money:300000,tags:['worry:money','dream:freedom']},
+  {id:'debt',name:'Закрыть долг',sphere:'money',why:'Жить без давления долгов',stages:['Все долги выписаны','План платежей','Четверть закрыта','Половина закрыта','Долг закрыт'],steps:['Выписать все долги и ставки'],money:200000,tags:['worry:money']},
+  {id:'clients',name:'Первые 10 клиентов',sphere:'work',why:'Дело, которое кормит',stages:['Первый клиент','3 клиента','5 клиентов','7 клиентов','10 клиентов'],steps:['Написать 5 потенциальным клиентам','Подготовить предложение'],tags:['dream:business','worry:money','stage:business']},
+  {id:'launch',name:'Запустить своё дело',sphere:'work',why:'Работать на свою мечту',stages:['Идея проверена','План на 3 месяца','Первая версия','Первые продажи','Запуск'],steps:['Поговорить с 3 будущими клиентами'],tags:['dream:business','worry:direction']},
+  {id:'run10',name:'Пробежать первые 10 км',sphere:'health',why:'Сильное тело и ясная голова',stages:['3 км без остановки','5 км','7 км','8 км','10 км'],steps:['Лёгкая пробежка 3 км','Разминка 10 минут'],tags:['dream:health','worry:energy']},
+  {id:'sleep',name:'Ложиться до 23:00',sphere:'health',why:'Энергия начинается со сна',stages:['3 дня подряд','7 дней','14 дней','21 день','30 дней'],steps:['Убрать телефон в 22:30'],tags:['worry:energy','worry:chaos']},
+  {id:'smoke',name:'Бросить курить',sphere:'health',why:'Здоровье и свобода от привычки',stages:['1 день','3 дня','7 дней','30 дней','90 дней'],steps:['Убрать сигареты из дома'],tags:['dream:health']},
+  {id:'nature',name:'Природа каждую неделю',sphere:'energy',why:'Восстанавливаться, а не выгорать',stages:['1 неделя','2 недели','4 недели','8 недель','12 недель'],steps:['Прогулка у воды'],tags:['worry:energy','restore:nature']},
+  {id:'quiet',name:'10 минут тишины каждое утро',sphere:'energy',why:'Порядок в голове с утра',stages:['3 дня','7 дней','14 дней','21 день','30 дней'],steps:['10 минут без телефона после пробуждения'],tags:['worry:chaos','worry:energy']},
+  {id:'books',name:'12 книг за год',sphere:'growth',why:'Расти каждый месяц',stages:['1 книга','3 книги','6 книг','9 книг','12 книг'],steps:['Книга 20 минут'],tags:['dream:growth']},
+  {id:'findgoal',name:'Найти свою цель',sphere:'growth',why:'Понять, куда двигаться именно мне',stages:['Описал желаемую жизнь','Примерил 5 образов','Выбрал близкие образы','Сложил одну картину','Главная цель выбрана'],steps:['Описать, как хочу жить через 5 лет'],tags:['worry:direction']},
+  {id:'parentsweek',name:'Видеться с родителями каждую неделю',sphere:'parents',why:'Время с родителями не вернуть',stages:['1 месяц','2 месяца','3 месяца','6 месяцев','Год'],steps:['Заехать на чай','Позвонить маме'],tags:['worry:people','need:parents']},
+  {id:'stories',name:'Записать 10 историй родителей',sphere:'parents',why:'Сохранить память семьи',stages:['2 истории','4 истории','6 историй','8 историй','10 историй'],steps:['Спросить, как познакомились родители'],tags:['worry:people','need:parents']},
+  {id:'datenight',name:'Вечер вдвоём каждую неделю',sphere:'partner',why:'Любовь держится на внимании',stages:['1 неделя','4 недели','8 недель','12 недель','Полгода'],steps:['Запланировать вечер без телефонов'],tags:['worry:people','need:partner','dream:family']},
+  {id:'kidshour',name:'Час с ребёнком без телефона',sphere:'kids',why:'Детство не повторится',stages:['7 дней','14 дней','30 дней','60 дней','90 дней'],steps:['Час с ребёнком без телефона'],tags:['worry:people','need:kids','dream:family']},
+  {id:'friends3',name:'Вернуть близких друзей',sphere:'friends',why:'Люди рядом — это опора',stages:['Список друзей','Первая встреча','Вторая встреча','Третья встреча','Традиция встреч'],steps:['Написать давнему другу'],tags:['worry:lonely']},
+  {id:'familyready',name:'Подготовить жизнь к семье',sphere:'partner',why:'Встретить семью готовым',stages:['Здоровье в порядке','Дом готов','Финансовый запас','План на год вдвоём','Готов'],steps:['Пройти обследование','Отложить к запасу'],tags:['dream:family']}
+];
+const LIBO=Object.fromEntries(LIB.map(t=>[t.id,t]));
+
+/* ================= портрет ================= */
+function zodiac(m,d){
+  const z=[['Козерог',1,19,'earth'],['Водолей',2,18,'air'],['Рыбы',3,20,'water'],['Овен',4,19,'fire'],['Телец',5,20,'earth'],['Близнецы',6,20,'air'],['Рак',7,22,'water'],['Лев',8,22,'fire'],['Дева',9,22,'earth'],['Весы',10,22,'air'],['Скорпион',11,21,'water'],['Стрелец',12,21,'fire'],['Козерог',12,31,'earth']];
+  for(const[n,mm,dd,el]of z){if(m<mm||(m===mm&&d<=dd))return{name:n,el}}return{name:'Козерог',el:'earth'};
+}
+const ELEM={
+  fire:{title:'Сила <em>живого огня</em>',text:'Ты быстро загораешься и зажигаешь других. Твоя энергия двигает дела с места, а когда ты направляешь её в одну цель, результат приходит быстрее, чем ждут.',tags:['энергия старта','смелость']},
+  earth:{title:'Сила <em>тихого упорства</em>',text:'Ты из тех, кто не бросает начатое. Тебе не нужны рывки — твоя сила в ровных шагах, которые складываются в большие дела. Люди рядом чувствуют твою надёжность.',tags:['доводишь до конца','надёжность']},
+  air:{title:'Сила <em>ясной мысли</em>',text:'Ты видишь связи и варианты, которые другие не замечают. Когда мысли уложены по порядку, ты находишь решения легко и помогаешь найти их близким.',tags:['видишь связи','лёгкость']},
+  water:{title:'Сила <em>глубокого чувства</em>',text:'Ты тонко чувствуешь людей и момент. Эта чуткость — твоя опора: она подсказывает, кому доверять и когда действовать.',tags:['чуткость','интуиция']}
+};
+function portrait(p){
+  let el='earth',sign=null;
+  if(p.birth){const[y,m,d]=p.birth.split('-').map(Number);sign=zodiac(m,d);el=sign.el}
+  const e=ELEM[el];
+  const pace={fast:'Тебе подойдут маленькие шаги каждый день — они закрепят то, что ты начинаешь с огнём.',steady:'Твой ритм — медленно, но стабильно. Приложение будет беречь этот ритм.',slow:'Ты долго собираешься, но доводишь. Первый шаг будет совсем маленьким — дальше пойдёт.'}[p.pace]||'';
+  const rest={nature:'восстанавливаешься на природе',sport:'сила через спорт',people:'сила в близких',quiet:'ценишь тишину',travel:'новые места заряжают',create:'творчество заряжает'};
+  const tags=[...e.tags,...(p.restore||[]).slice(0,2).map(r=>rest[r]).filter(Boolean)];
+  return{title:e.title,text:e.text+(pace?' '+pace:''),tags,sign:sign?sign.name:null};
+}
+
+/* ================= состояние ================= */
+const KEY='moya-realnost-v1';
+const DEF=()=>({v:1,created:null,onboarded:false,profile:{},spheres:[],goals:[],days:{},feed:[],custom:{},wheel:{},chat:[],mentor:{},plus:false,dayOffset:0,sound:true,active:null});
+let S=DEF(), memOnly=false;
+function load(){try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(DEF(),JSON.parse(raw))}catch(e){memOnly=true}}
+let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){memOnly=true}},120)}
+function today(){return addDays(dkey(new Date()),S.dayOffset||0)}
+const monthKey=k=>k.slice(0,7);
+
+/* ================= домен ================= */
+const LIMITS={spheres:3,goals:1,mentor:5};
+function activeGoals(){return S.goals.filter(g=>!g.closed)}
+function closedGoals(){return S.goals.filter(g=>g.closed).sort((a,b)=>b.closed.localeCompare(a.closed))}
+function goalById(id){return S.goals.find(g=>g.id===id)}
+function stageIdx(g){const i=g.stages.findIndex(s=>!s.done);return i<0?g.stages.length:i}
+function goalUnits(g){const n=g.stages.length,seg=60/n,done=stageIdx(g);return Math.min(60,done*seg+Math.min(seg-1,g.stepsSince||0))}
+function addFeed(o){S.feed.push(Object.assign({id:uid(),date:today()},o))}
+function createGoal(tpl,extra={}){
+  const g={id:uid(),tpl:tpl.id||null,name:extra.name||tpl.name,sphere:extra.sphere||tpl.sphere,why:extra.why||tpl.why||'',basis:extra.basis||'',
+    stages:(extra.stages||tpl.stages).map(n=>({name:n,done:null})),steps:0,stepsSince:0,log:[],created:today(),closed:null,words:'',
+    money:(extra.money??tpl.money)?{target:+(extra.money??tpl.money),saved:0}:null,nextSteps:tpl.steps||[]};
+  g.log.push({date:today(),text:'Путь начат',kind:'grow'});
+  S.goals.push(g);S.active=g.id;
+  addFeed({type:'start',kind:'grow',title:`Начат путь: ${g.name}`,text:g.why,goalId:g.id});
+  save();return g;
+}
+function logStep(g,text,kind){g.steps++;g.stepsSince=(g.stepsSince||0)+1;g.log.push({date:today(),text,kind:kind||SPH[g.sphere].emo});save()}
+function addMoney(g,sum){if(!g.money)return;g.money.saved+=sum;g.log.push({date:today(),text:`+${fmtN(sum)} ₽ к цели`,kind:'joy'});
+  addFeed({type:'money',kind:'joy',title:`+${fmtN(sum)} ₽ · ${g.name}`,text:`Накоплено ${fmtN(g.money.saved)} из ${fmtN(g.money.target)}`,goalId:g.id});logStep(g,`Взнос ${fmtN(sum)} ₽`,'joy')}
+function completeStage(g){
+  const i=stageIdx(g);if(i>=g.stages.length)return false;
+  g.stages[i].done=today();g.stepsSince=0;g.log.push({date:today(),text:`Лагерь взят: ${g.stages[i].name}`,kind:'joy'});
+  const last=i===g.stages.length-1;
+  if(last){g.closed=today();addFeed({type:'peak',kind:'joy',title:g.name,text:peakSummary(g),goalId:g.id})}
+  else addFeed({type:'stage',kind:'joy',title:`Лагерь взят: ${g.stages[i].name}`,text:g.name,goalId:g.id});
+  save();return last;
+}
+function peakSummary(g){const d=Math.max(1,daysBetween(g.created,g.closed||today()));const hard=g.log.filter(l=>l.kind==='hard').length;
+  return `${d} ${word(d,W_DAY)}, ${g.steps} ${word(g.steps,W_STEP)}${hard?`, ${hard} ${word(hard,['трудность','трудности','трудностей'])} пройдено`:''}`}
+
+function getDay(k){
+  if(!S.days[k]){
+    const prev=Object.keys(S.days).filter(x=>x<k).sort().pop();
+    const carry=prev?S.days[prev].tasks.filter(t=>t.status==='moved'||(!t.status&&!S.days[prev].closed)).map(t=>({text:t.text,sphere:t.sphere,goalId:t.goalId||null,main:!!t.main})):[];
+    S.days[k]={mood:null,tasks:[],thought:'',closed:false,carry};
+  }
+  return S.days[k];
+}
+function suggestMain(){
+  const g=activeGoals().find(x=>x.id===S.active)||activeGoals()[0];
+  if(!g)return null;
+  const st=g.stages[stageIdx(g)];
+  const pool=g.nextSteps&&g.nextSteps.length?g.nextSteps:[`Шаг к этапу «${st?st.name:'вершина'}»`];
+  return{text:pool[(g.steps||0)%pool.length],sphere:g.sphere,goalId:g.id};
+}
+function addTask(day,t){day.tasks.push(Object.assign({id:uid(),status:null,main:false,goalId:null},t));S.custom[t.text]=(S.custom[t.text]||0)+1;save()}
+function streak(){let n=0,k=today();for(;;){const d=S.days[k];if(d&&d.tasks.some(t=>t.status==='done'))n++;else if(k!==today())break;k=addDays(k,-1);if(n>999)break}return n}
+function totalDone(){return Object.values(S.days).reduce((a,d)=>a+d.tasks.filter(t=>t.status==='done').length,0)}
+function suggestGoals(p){
+  const tags=new Set([`dream:${p.dream}`,`worry:${p.worry}`,`stage:${p.stage}`,...(p.restore||[]).map(r=>`restore:${r}`)]);
+  const fam=p.family||[];
+  return LIB.map(t=>{
+    let s=0;t.tags.forEach(x=>{if(tags.has(x))s+=x.startsWith('dream')?5:x.startsWith('worry')?4:2});
+    if(S.spheres.includes(t.sphere))s+=3;
+    if(t.tags.includes('need:kids')&&!fam.includes('kids'))s-=20;
+    if(t.tags.includes('need:partner')&&!fam.includes('partner'))s-=20;
+    if(t.tags.includes('need:parents')&&!fam.includes('parents'))s-=20;
+    return{t,s};
+  }).sort((a,b)=>b.s-a.s).slice(0,3).map(x=>x.t);
+}
+
+/* ================= звук и вибрация ================= */
+let AC=null;
+function ac(){if(!S.sound)return null;const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;if(!AC)AC=new A();if(AC.state==='suspended')AC.resume();return AC}
+function chime(big){const a=ac();if(!a)return;const now=a.currentTime,notes=big?[523.25,659.25,783.99]:[659.25,987.77];
+  notes.forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.value=f;const t=now+i*.09;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(big?.15:.09,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+(big?.9:.45));o.connect(g).connect(a.destination);o.start(t);o.stop(t+1)})}
+function noiseBuf(a,dur){const b=a.createBuffer(1,Math.max(1,a.sampleRate*dur|0),a.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return b}
+function boom(vol=1){const a=ac();if(!a)return;const now=a.currentTime;
+  const o=a.createOscillator(),og=a.createGain();o.frequency.setValueAtTime(120,now);o.frequency.exponentialRampToValueAtTime(38,now+.5);og.gain.setValueAtTime(.45*vol,now);og.gain.exponentialRampToValueAtTime(.001,now+.7);o.connect(og).connect(a.destination);o.start(now);o.stop(now+.75);
+  const n=a.createBufferSource();n.buffer=noiseBuf(a,1.2);const f=a.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(1600,now);f.frequency.exponentialRampToValueAtTime(200,now+1);const ng=a.createGain();ng.gain.setValueAtTime(.3*vol,now);ng.gain.exponentialRampToValueAtTime(.001,now+1.1);n.connect(f).connect(ng).connect(a.destination);n.start(now);
+  setTimeout(()=>{const a2=ac();if(!a2)return;for(let i=0;i<12;i++){const t=a2.currentTime+.05+Math.random()*.9,s=a2.createBufferSource();s.buffer=noiseBuf(a2,.04);const hf=a2.createBiquadFilter();hf.type='highpass';hf.frequency.value=2500+Math.random()*3000;const g=a2.createGain();g.gain.setValueAtTime(.1*vol*Math.random(),t);g.gain.exponentialRampToValueAtTime(.001,t+.04);s.connect(hf).connect(g).connect(a2.destination);s.start(t)}},250)}
+function whoosh(){const a=ac();if(!a)return;const now=a.currentTime,n=a.createBufferSource();n.buffer=noiseBuf(a,.6);const f=a.createBiquadFilter();f.type='bandpass';f.Q.value=2;f.frequency.setValueAtTime(400,now);f.frequency.exponentialRampToValueAtTime(3000,now+.5);const g=a.createGain();g.gain.setValueAtTime(.001,now);g.gain.exponentialRampToValueAtTime(.1,now+.25);g.gain.exponentialRampToValueAtTime(.001,now+.55);n.connect(f).connect(g).connect(a.destination);n.start(now)}
+function haptic(kind){
+  const tg=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.HapticFeedback;
+  if(tg){if(kind==='success')tg.notificationOccurred('success');else if(kind==='select')tg.selectionChanged();else tg.impactOccurred(kind||'light');return}
+  if(navigator.vibrate)navigator.vibrate(kind==='heavy'?[50,40,80]:kind==='success'?[30,60,30,60,120]:kind==='medium'?30:10);
+}
+let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200)}
+
+/* ================= общий цикл анимации ================= */
+const SCENES=new Set();
+function loop(now){for(const s of SCENES){if(s.canvas.offsetParent!==null||s.always){if(s.needSize)s.size();s.draw(now)}}requestAnimationFrame(loop)}
+function fitCanvas(s){const r=s.canvas.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);if(!r.width)return false;s.W=r.width;s.H=r.height;s.canvas.width=s.W*d;s.canvas.height=s.H*d;s.cx.setTransform(d,0,0,d,0,0);return true}
+window.addEventListener('resize',()=>SCENES.forEach(s=>s.needSize=true));
+const EMOS=['grow','joy','love','calm','hard'];
+const palette=()=>Object.fromEntries(EMOS.map(k=>[k,rgb(cssv('--'+k))]));
+
+/* ================= Мой мир: сфера из частиц ================= */
+class World{
+  constructor(canvas){this.canvas=canvas;this.cx=canvas.getContext('2d');this.energy=0;this.target=0;this.burst=0;this.angle=0;this.needSize=true;
+    const N=1300,g=Math.PI*(3-Math.sqrt(5));this.N=N;this.pts=[];
+    for(let i=0;i<N;i++){const y=1-(i/(N-1))*2,r=Math.sqrt(1-y*y),t=g*i;this.pts.push({x:Math.cos(t)*r,y,z:Math.sin(t)*r,j:Math.random()*6.28,k:Math.random()})}
+    for(let i=N-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[this.pts[i],this.pts[j]]=[this.pts[j],this.pts[i]]}
+    SCENES.add(this)}
+  size(){if(fitCanvas(this))this.needSize=false}
+  set(e){this.target=clamp01(e)}
+  pulse(){this.burst=1}
+  draw(now){
+    const{cx,W,H}=this;if(!W)return;const C=palette(),c1=C.grow,c2=C.joy;
+    this.energy+=(this.target-this.energy)*.04;this.burst*=.94;if(!REDUCE)this.angle+=.0032+this.burst*.02;
+    cx.clearRect(0,0,W,H);
+    const gl=cx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.min(W,H)*.55);gl.addColorStop(0,cssv('--glow'));gl.addColorStop(1,'rgba(0,0,0,0)');cx.globalAlpha=.5+this.energy*.5;cx.fillStyle=gl;cx.fillRect(0,0,W,H);cx.globalAlpha=1;
+    const e=this.energy,br=REDUCE?1:1+Math.sin(now/1600)*.025,R=Math.min(W,H)*(.27+e*.13)*br*(1+this.burst*.08);
+    const vis=Math.floor(360+e*(this.N-360)),ca=Math.cos(this.angle),sa=Math.sin(this.angle),ct=Math.cos(.38),st=Math.sin(.38);
+    for(let i=0;i<vis;i++){const p=this.pts[i],wob=REDUCE?0:Math.sin(now/900+p.j)*.035*(.4+e);
+      const x=p.x*(1+wob),y=p.y*(1+wob),z=p.z*(1+wob),x1=x*ca+z*sa,z1=-x*sa+z*ca,y1=y*ct-z1*st,z2=y*st+z1*ct,dp=(z2+1)/2;
+      const m=clamp01((1-p.y)/2*.6+e*.55+p.k*.15),c=mixc(c1,c2,m);
+      cx.fillStyle=rgba(c,(.12+dp*.78)*(.55+e*.45));cx.beginPath();cx.arc(W/2+x1*R,H/2+y1*R,(.5+dp*1.5)*(.9+e*.5),0,6.283);cx.fill()}
+  }
+}
+
+/* ================= Гора: путь и празднование ================= */
+function rng(seed){return()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646}}
+class Mountain{
+  constructor(canvas,pinEl){this.canvas=canvas;this.cx=canvas.getContext('2d');this.pin=pinEl;this.needSize=true;
+    this.units=0;this.shown=0;this.kinds=[];this.camps=5;this.stars=[];this.sparks=[];this.fw=[];this.P=[];this.phase=0;this.t0=0;this.flags={};this.nextRocket=0;this.mode='path';SCENES.add(this)}
+  size(){if(!fitCanvas(this))return;this.needSize=false;this.build()}
+  ridge(seed,y0,amp,peaks){const r=rng(seed),o=[...Array(6)].map(()=>[r()*6.283,1+r()*3]),pts=[];
+    for(let i=0;i<=48;i++){const x=i/48;let y=y0;o.forEach(([ph,f],k)=>y+=Math.sin(x*f*6+ph)*amp/(k+1));for(const[px,py,w]of peaks)y-=Math.max(0,1-Math.abs(x-px)/w)*py;pts.push([x*this.W,y*this.H])}return pts}
+  build(){
+    const{W,H}=this;const top=this.mode==='celebrate'?.42:.40;this.peak=[W*.52,H*top];
+    this.far=this.ridge(7,.61,.018,[[.2,.10,.25],[.85,.12,.22]]);this.mid=this.ridge(21,.72,.02,[[.1,.08,.2],[.95,.1,.2]]);
+    const main=[];for(let i=0;i<=60;i++){const x=-.05+1.1*i/60,dx=x-.52;let y=top+Math.abs(dx)*(dx<0?1.08:.98);y+=Math.sin(x*37)*.006+Math.sin(x*91+1)*.004+(Math.abs(dx)>.03?Math.sin(x*17+2)*.012:0);main.push([x*W,Math.min(1.02,y)*H])}
+    main[Math.round(.57/1.1*60)]=[this.peak[0],this.peak[1]];this.main=main;
+    this.front=this.ridge(99,.95,.01,[[.12,.05,.25],[.9,.05,.25]]);
+    const T=[[.46,.91],[.28,.83],[.60,.75],[.36,.67],[.58,.59],[.44,.51],[.52,top]];
+    this.path=[];for(let s=0;s<6;s++){const a=T[s],b=T[s+1];for(let k=0;k<10;k++){const t=k/10;this.path.push({x:(a[0]+(b[0]-a[0])*t)*W,y:(a[1]+(b[1]-a[1])*t)*H})}}
+    this.path.push({x:this.peak[0],y:this.peak[1]});
+    this.stars=Array.from({length:60},()=>({x:Math.random()*W,y:Math.random()*H*.5,s:Math.random()*1.2+.2,t:Math.random()*6}));
+    if(this.mode==='celebrate')this.buildCheck();
+  }
+  campIndex(c){return Math.round(c*60/this.camps)}
+  setGoal(units,kinds,camps){this.units=units;this.kinds=kinds;this.camps=camps;if(Math.abs(this.shown-units)>30)this.shown=units}
+  poly(pts,fill){const{cx,H}=this;cx.beginPath();cx.moveTo(pts[0][0],H+2);pts.forEach(p=>cx.lineTo(p[0],p[1]));cx.lineTo(pts[pts.length-1][0],H+2);cx.closePath();cx.fillStyle=fill;cx.fill()}
+  posAt(v){const i0=Math.max(0,Math.min(60,Math.floor(v))),k=v-i0,a=this.path[i0],b=this.path[Math.min(60,i0+1)];return[a.x+(b.x-a.x)*k,a.y+(b.y-a.y)*k]}
+  scene(now,dawn){
+    const{cx,W,H,peak}=this;
+    const sky=cx.createLinearGradient(0,0,0,H*.74);sky.addColorStop(0,rgba(mixc([5,12,22],[22,34,58],dawn),1));sky.addColorStop(.58,rgba(mixc([10,26,30],[92,70,78],dawn),1));sky.addColorStop(1,rgba(mixc([16,38,32],[230,150,90],dawn),1));
+    cx.fillStyle=sky;cx.fillRect(0,0,W,H);
+    for(const s of this.stars){const tw=REDUCE?.6:.35+.65*Math.abs(Math.sin(now/1300+s.t));cx.fillStyle=`rgba(236,242,236,${(1-dawn*.8)*.65*tw})`;cx.beginPath();cx.arc(s.x,s.y,s.s,0,6.283);cx.fill()}
+    const sg=cx.createRadialGradient(peak[0],peak[1]+H*.08,0,peak[0],peak[1]+H*.08,W*.75);sg.addColorStop(0,`rgba(255,205,120,${.08+.5*dawn})`);sg.addColorStop(.35,`rgba(243,160,90,${.03+.2*dawn})`);sg.addColorStop(1,'rgba(0,0,0,0)');cx.fillStyle=sg;cx.fillRect(0,0,W,H);
+    this.poly(this.far,rgba(mixc([22,36,56],[70,62,86],dawn),1));this.poly(this.mid,rgba(mixc([14,32,30],[40,50,52],dawn),1));
+    const mg=cx.createLinearGradient(0,peak[1],0,H);mg.addColorStop(0,rgba(mixc([22,48,36],[58,66,56],dawn),1));mg.addColorStop(1,'rgb(8,20,14)');this.poly(this.main,mg);
+    cx.save();cx.beginPath();cx.moveTo(this.main[0][0],H+2);this.main.forEach(p=>cx.lineTo(p[0],p[1]));cx.lineTo(this.main[60][0],H+2);cx.closePath();cx.clip();
+    const lg=cx.createRadialGradient(peak[0]-W*.08,peak[1]+H*.05,0,peak[0]-W*.08,peak[1]+H*.05,W*.55);lg.addColorStop(0,`rgba(255,200,130,${.08+dawn*.25})`);lg.addColorStop(1,'rgba(255,200,130,0)');cx.fillStyle=lg;cx.fillRect(0,0,W,H);cx.restore();
+    cx.beginPath();cx.moveTo(peak[0],peak[1]);cx.lineTo(peak[0]-W*.055,peak[1]+H*.055);cx.lineTo(peak[0]-W*.02,peak[1]+H*.045);cx.lineTo(peak[0]+W*.005,peak[1]+H*.06);cx.lineTo(peak[0]+W*.03,peak[1]+H*.04);cx.lineTo(peak[0]+W*.05,peak[1]+H*.05);cx.closePath();cx.fillStyle='rgba(232,238,236,.9)';cx.fill();
+  }
+  trail(now,C,progress){
+    const{cx}=this,lit=Math.floor(progress);
+    for(let i=0;i<60;i++){const a=this.path[i],b=this.path[i+1],on=i<lit,k=this.kinds[i]||'grow';cx.strokeStyle=on?rgba(C[k],.62):'rgba(236,242,236,.12)';cx.lineWidth=on?2.2:1;cx.setLineDash(on?[]:[3,4]);cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke()}
+    cx.setLineDash([]);
+    this.path.forEach((p,i)=>{if(i%2)return;const on=i<=lit,k=this.kinds[i]||'grow';cx.fillStyle=on?rgba(C[k],.95):'rgba(236,242,236,.2)';cx.beginPath();cx.arc(p.x,p.y,on?2.2:1.4,0,6.283);cx.fill()});
+  }
+  campsDraw(now,C,progress){
+    const{cx}=this,j=C.joy;
+    for(let c=1;c<=this.camps;c++){const idx=this.campIndex(c),p=this.path[idx],done=progress>=idx-.01;
+      if(c===this.camps){cx.strokeStyle=done?rgba(j,1):'rgba(236,242,236,.55)';cx.lineWidth=2;cx.beginPath();cx.moveTo(p.x,p.y-2);cx.lineTo(p.x,p.y-26);cx.stroke();const w=REDUCE?0:Math.sin(now/320)*2;cx.fillStyle=done?rgba(j,1):'rgba(236,242,236,.35)';cx.beginPath();cx.moveTo(p.x,p.y-26);cx.quadraticCurveTo(p.x+9,p.y-23+w,p.x+17,p.y-21);cx.lineTo(p.x,p.y-15);cx.fill();continue}
+      const next=!done&&progress>=this.campIndex(c-1)-.01;
+      if(next&&!REDUCE){const pu=(Math.sin(now/420)+1)/2;cx.strokeStyle=rgba(j,.25+.35*pu);cx.lineWidth=1.5;cx.beginPath();cx.arc(p.x,p.y,9+4*pu,0,6.283);cx.stroke()}
+      cx.beginPath();cx.moveTo(p.x-7,p.y+4);cx.lineTo(p.x,p.y-7);cx.lineTo(p.x+7,p.y+4);cx.closePath();cx.fillStyle=done?rgba(j,.95):'rgba(8,20,14,.85)';cx.fill();cx.strokeStyle=done?rgba(j,1):'rgba(236,242,236,.5)';cx.lineWidth=1.2;cx.stroke();
+      if(done){cx.strokeStyle='rgba(26,18,6,.9)';cx.lineWidth=1.4;cx.beginPath();cx.moveTo(p.x-2.5,p.y);cx.lineTo(p.x-.5,p.y+2);cx.lineTo(p.x+3,p.y-2.5);cx.stroke()}}
+  }
+  marker(now,C,progress){const{cx}=this,[mx,my]=this.posAt(progress),pu=REDUCE?.5:(Math.sin(now/300)+1)/2,j=C.joy;
+    cx.fillStyle=rgba(j,.16+.2*pu);cx.beginPath();cx.arc(mx,my,9+7*pu,0,6.283);cx.fill();cx.fillStyle=rgba(j,1);cx.beginPath();cx.arc(mx,my,4.5,0,6.283);cx.fill();return[mx,my]}
+  spark(x,y,n,kind){for(let i=0;i<n;i++){const a=Math.random()*6.283,s=.6+Math.random()*2.8;this.sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-.6,l:1,kind:Math.random()<.6?kind:EMOS[i%4],r:1.4,dec:.02})}}
+  sparksDraw(C,g){const{cx}=this;this.sparks=this.sparks.filter(s=>s.l>0);for(const s of this.sparks){s.vx*=.965;s.vy=s.vy*.965+g;s.x+=s.vx;s.y+=s.vy;s.l-=s.dec;cx.fillStyle=rgba(C[s.kind],Math.max(0,s.l));cx.beginPath();cx.arc(s.x,s.y,s.r,0,6.283);cx.fill()}}
+  foreground(){const{cx,W,H}=this;this.poly(this.front,'rgb(5,13,9)');const sh=cx.createLinearGradient(0,H*.74,0,H);sh.addColorStop(0,'rgba(5,13,9,0)');sh.addColorStop(1,'rgba(5,13,9,.9)');cx.fillStyle=sh;cx.fillRect(0,H*.74,W,H*.26)}
+  draw(now){
+    if(!this.W)return;const C=palette();
+    if(this.mode==='celebrate')return this.drawCelebrate(now,C);
+    this.shown+=(this.units-this.shown)*(REDUCE?1:.06);
+    const dusk=Math.min(1,this.shown/60*1.05);
+    this.cx.clearRect(0,0,this.W,this.H);this.scene(now,dusk*.55);this.trail(now,C,this.shown);this.campsDraw(now,C,this.shown);
+    const[mx,my]=this.marker(now,C,this.shown);this.sparksDraw(C,.03);this.foreground();
+    if(this.pin){const x=Math.max(64,Math.min(this.W-64,mx)),y=my-16;this.pin.style.left=x+'px';this.pin.style.top=y+'px'}
+  }
+  /* ---- празднование ---- */
+  checkGeo(){const s=Math.min(this.W,380)*.52,ox=this.peak[0],oy=this.peak[1]-this.H*.22;return{A:[ox-.22*s,oy+.02*s],B:[ox-.08*s,oy+.17*s],Cc:[ox+.20*s,oy-.16*s],ring:[ox,oy,.31*s],th:.08*s}}
+  buildCheck(){const g=this.checkGeo(),L1=Math.hypot(g.B[0]-g.A[0],g.B[1]-g.A[1]),L2=Math.hypot(g.Cc[0]-g.B[0],g.Cc[1]-g.B[1]);this.P=[];
+    for(let i=0;i<520;i++){const s=Math.random()*(L1+L2);let tx,ty;if(s<L1){const k=s/L1;tx=g.A[0]+(g.B[0]-g.A[0])*k;ty=g.A[1]+(g.B[1]-g.A[1])*k}else{const k=(s-L1)/L2;tx=g.B[0]+(g.Cc[0]-g.B[0])*k;ty=g.B[1]+(g.Cc[1]-g.B[1])*k}
+      const j=(Math.random()-.5)*g.th,a=Math.random()*6.283;this.P.push({tx:tx+Math.cos(a)*j,ty:ty+Math.sin(a)*j,x:0,y:0,vx:0,vy:0,bx:0,by:0,kind:EMOS[Math.floor(Math.random()*5)],keep:Math.random()<.14,d:Math.random()*.35,j:Math.random()*6.283})}
+    this.snap=false}
+  startCelebrate(kinds){this.mode='celebrate';this.kinds=kinds;this.camps=5;this.phase=1;this.flags={};this.fw=[];this.sparks=[];this.nextRocket=0;this.t0=performance.now()-(REDUCE?7000:0);this.needSize=true;this.snap=false}
+  drawCelebrate(now,C){
+    const{cx,W,H}=this,t=now-this.t0,climb=clamp01(t/1500),prog=48+12*ease(climb),dawn=ease(clamp01((t-900)/3200)),g=this.checkGeo(),bAt=[this.peak[0],this.peak[1]-H*.22];
+    cx.clearRect(0,0,W,H);this.scene(now,dawn);this.trail(now,C,prog);this.campsDraw(now,C,prog);
+    if(t<1500)this.marker(now,C,prog);
+    const f=this.flags;
+    if(t>1500&&!f.top){f.top=1;haptic('heavy');boom(.8);whoosh()}
+    if(t>2050&&!f.burst){f.burst=1;haptic('heavy');boom(1);this.P.forEach(p=>{const a=Math.random()*6.283,sp=(1.8+Math.random()*4.6)*(Math.min(W,380)/380);p.x=bAt[0];p.y=bAt[1];p.vx=Math.cos(a)*sp;p.vy=Math.sin(a)*sp})}
+    if(t>4300&&!f.ok){f.ok=1;haptic('success');this.onDone&&this.onDone()}
+    if(t>1450&&t<1900){const k=1-(t-1450)/450,fg=cx.createRadialGradient(this.peak[0],this.peak[1],0,this.peak[0],this.peak[1],70);fg.addColorStop(0,rgba(C.joy,.9*k));fg.addColorStop(1,rgba(C.joy,0));cx.fillStyle=fg;cx.beginPath();cx.arc(this.peak[0],this.peak[1],70,0,6.283);cx.fill()}
+    if(t>1500&&t<2050){const k=ease((t-1500)/550),y=this.peak[1]+(bAt[1]-this.peak[1])*k;for(let i=0;i<10;i++){cx.fillStyle=rgba(C.joy,(1-i/10)*.8);cx.beginPath();cx.arc(this.peak[0],y+i*5,2.2-i*.15,0,6.283);cx.fill()}}
+    if(t>2900){const k=clamp01((t-2900)/1200),gl=cx.createRadialGradient(g.ring[0],g.ring[1],0,g.ring[0],g.ring[1],g.ring[2]*1.9);gl.addColorStop(0,`rgba(255,210,120,${.28*k})`);gl.addColorStop(1,'rgba(0,0,0,0)');cx.fillStyle=gl;cx.fillRect(0,0,W,H)}
+    if(t>2050||REDUCE){for(const p of this.P){let x,y,col,a,s;
+      if(t<2900&&!REDUCE){p.vx*=.955;p.vy=p.vy*.955+.045;p.x+=p.vx;p.y+=p.vy;x=p.x;y=p.y;col=C[p.kind];a=.95;s=1.3}
+      else{if(!this.snap){this.P.forEach(q=>{q.bx=REDUCE?q.tx:q.x;q.by=REDUCE?q.ty:q.y});this.snap=true}
+        const k=REDUCE?1:ease(clamp01(((t-2900)/1300-p.d)/(1-p.d)));x=p.bx+(p.tx-p.bx)*k;y=p.by+(p.ty-p.by)*k;if(k>=1&&!REDUCE){x+=Math.sin(now/700+p.j)*.6;y+=Math.cos(now/900+p.j)*.6}
+        col=p.keep?C[p.kind]:mixc(C[p.kind],C.joy,k);a=.6+k*.4;s=1.05+k*(p.keep?.5:1.05)}
+      cx.fillStyle=rgba(col,Math.min(1,a));cx.beginPath();cx.arc(x,y,s,0,6.283);cx.fill()}}
+    if(t>3800){const k=REDUCE?1:ease(clamp01((t-3800)/900)),[rx,ry,rr]=g.ring;cx.lineCap='round';cx.strokeStyle=rgba(C.joy,.18);cx.lineWidth=10;cx.beginPath();cx.arc(rx,ry,rr,-Math.PI/2,-Math.PI/2+k*6.283);cx.stroke();cx.strokeStyle=rgba(C.joy,.9);cx.lineWidth=2.4;cx.beginPath();cx.arc(rx,ry,rr,-Math.PI/2,-Math.PI/2+k*6.283);cx.stroke()}
+    if(!REDUCE&&t>2300){const rate=t<7500?560:1900;if(now>this.nextRocket){const x=W*(Math.random()<.5?.08+Math.random()*.25:.67+Math.random()*.25);this.fw.push({x,y:H*.66,vy:-(4.2+Math.random()*1.6)*(H/440),ty:H*(.08+Math.random()*.26),kind:EMOS[Math.floor(Math.random()*4)],tr:[]});this.nextRocket=now+rate*(.7+Math.random()*.6)}}
+    this.fw=this.fw.filter(r=>{r.tr.push([r.x,r.y]);if(r.tr.length>9)r.tr.shift();r.y+=r.vy;r.vy*=.986;r.tr.forEach((q,i)=>{cx.fillStyle=rgba(C[r.kind],i/9*.7);cx.beginPath();cx.arc(q[0],q[1],1.5,0,6.283);cx.fill()});
+      if(r.y<=r.ty||r.vy>-1){for(let i=0;i<75;i++){const a=Math.random()*6.283,s=.8+Math.random()*3;this.sparks.push({x:r.x,y:r.y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1,kind:Math.random()<.7?r.kind:EMOS[i%5],r:.9+Math.random()*1.3,dec:.010+Math.random()*.008})}haptic('light');boom(.3);return false}return true});
+    this.sparksDraw(C,.04);this.foreground();
+  }
+}
+
+/* ================= Поток жизни ================= */
+class Flow{
+  constructor(canvas){this.canvas=canvas;this.cx=canvas.getContext('2d');this.data=[];this.needSize=true;this.dots=Array.from({length:60},()=>({p:Math.random(),l:Math.floor(Math.random()*5),o:Math.random(),v:.0006+Math.random()*.0012}));SCENES.add(this)}
+  size(){if(fitCanvas(this))this.needSize=false}
+  set(data,peaks){this.data=data;this.peaks=peaks||[]}
+  x(i){const n=Math.max(2,this.data.length);return 14+(this.W-28)*i/(n-1)}
+  layers(){const mx=Math.max(1,...this.data.map(d=>d.reduce((a,b)=>a+b,0))),sc=(this.H-40)/mx,mid=this.H*.5;return this.data.map(d=>{const tot=d.reduce((a,b)=>a+b,0);let y=mid-tot*sc/2;return d.map(v=>{const t=y;y+=v*sc;return[t,y]})})}
+  draw(now){
+    const{cx,W,H}=this;if(!W||this.data.length<2)return;const C=palette();cx.clearRect(0,0,W,H);const L=this.layers();
+    for(let k=0;k<5;k++){const top=L.map((m,i)=>[this.x(i),m[k][0]]),bot=L.map((m,i)=>[this.x(i),m[k][1]]).reverse();
+      cx.beginPath();cx.moveTo(top[0][0],top[0][1]);for(let i=1;i<top.length;i++){const[x0,y0]=top[i-1],[x1,y1]=top[i],mx=(x0+x1)/2;cx.bezierCurveTo(mx,y0,mx,y1,x1,y1)}
+      cx.lineTo(bot[0][0],bot[0][1]);for(let i=1;i<bot.length;i++){const[x0,y0]=bot[i-1],[x1,y1]=bot[i],mx=(x0+x1)/2;cx.bezierCurveTo(mx,y0,mx,y1,x1,y1)}cx.closePath();
+      const g=cx.createLinearGradient(0,0,W,0);g.addColorStop(0,rgba(C[EMOS[k]],.3));g.addColorStop(1,rgba(C[EMOS[k]],.88));cx.fillStyle=g;cx.fill()}
+    const n=this.data.length;
+    for(const d of this.dots){if(!REDUCE)d.p=(d.p+d.v)%1;const fi=d.p*(n-1),a=Math.floor(fi),b=Math.min(n-1,a+1),t=fi-a,e=t*t*(3-2*t),top=L[a][d.l][0]+(L[b][d.l][0]-L[a][d.l][0])*e,bot=L[a][d.l][1]+(L[b][d.l][1]-L[a][d.l][1])*e;
+      if(bot-top<1)continue;cx.fillStyle=`rgba(255,255,255,${.25+.45*Math.sin(d.p*Math.PI)})`;cx.beginPath();cx.arc(this.x(fi),top+(bot-top)*(.2+.6*d.o),1.2,0,6.283);cx.fill()}
+    for(const i of this.peaks){const x=this.x(i),y=L[i][0][0]-8;cx.fillStyle=rgba(C.joy,1);cx.beginPath();cx.moveTo(x,y-7);cx.lineTo(x+6,y+3);cx.lineTo(x-6,y+3);cx.closePath();cx.fill()}
+  }
+}
+
+/* ================= запуск ================= */
+load();
+const ui={tab:'day',onb:0,od:{restore:[],family:[],spheres:[]},filter:'all',wsel:0,pick:null,check:{},evening:{},exportOpt:{period:'Всё',who:'self',money:true,priv:true},chatBusy:false};
+let SAMPLE=null, DOWNLOADS=null;
+if(window.claude&&claude.use){claude.use('sample').then(s=>{SAMPLE=s;if(ui.tab==='profile')render()}).catch(()=>{});claude.use('downloads').then(d=>{DOWNLOADS=d}).catch(()=>{})}
+(function tgInit(){const tg=window.Telegram&&window.Telegram.WebApp;if(!tg)return;try{tg.ready();tg.expand();if(tg.colorScheme)document.documentElement.dataset.theme=tg.colorScheme;const dark=tg.colorScheme!=='light';if(tg.setHeaderColor)tg.setHeaderColor(dark?'#06120C':'#F4F0E6');if(tg.setBackgroundColor)tg.setBackgroundColor(dark?'#06120C':'#F4F0E6')}catch(e){}})();
+
+const world=new World($('#worldCv'));
+const mount=new Mountain($('#mountCv'),$('#pin'));
+const cel=new Mountain($('#celCv'),null);cel.mode='celebrate';
+const flow=new Flow($('#flowCv'));
+requestAnimationFrame(loop);
+
+/* ================= навигация ================= */
+function go(tab){ui.tab=tab;$$('.screen').forEach(s=>s.classList.toggle('active',s.id===tab));$$('.tab').forEach(t=>t.toggleAttribute('aria-current',t.dataset.tab===tab)&&t.setAttribute('aria-current','page'));
+  window.scrollTo(0,0);SCENES.forEach(s=>s.needSize=true);render()}
+function render(){
+  document.body.classList.toggle('onb',!S.onboarded);
+  if(!S.onboarded)return renderOnb();
+  ({day:renderDay,path:renderPath,peaks:renderPeaks,history:renderHistory,profile:renderProfile})[ui.tab]();
+}
+const A={}; // действия
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const f=A[el.dataset.act];if(f){e.preventDefault();f(el,e)}});
+A.tab=el=>{haptic('select');go(el.dataset.tab)};
+
+/* ================= лист ================= */
+function sheet(html){$('#sheetBody').innerHTML=html;document.body.classList.add('sheet-open');$('#sheet').scrollTop=0}
+function closeSheet(){document.body.classList.remove('sheet-open')}
+A.closeSheet=closeSheet;
+function selGroup(el){const box=el.closest('[data-group]');const multi=box.dataset.multi==='1';const max=+box.dataset.max||99;
+  if(multi){const on=el.getAttribute('aria-pressed')==='true';if(!on&&$$('[aria-pressed="true"]',box).length>=max){toast(box.dataset.maxmsg||`Можно выбрать до ${max}`);return false}el.setAttribute('aria-pressed',String(!on))}
+  else{$$('[data-v]',box).forEach(b=>b.setAttribute('aria-pressed','false'));el.setAttribute('aria-pressed','true')}
+  haptic('select');return $$('[aria-pressed="true"]',box).map(b=>b.dataset.v)}
+const opt=(v,label,sub,on,dot)=>`<button class="opt" data-v="${esc(v)}" aria-pressed="${!!on}" ${dot?`style="--dot:var(--${dot})"`:''}>${dot?'<span class="dot"></span>':''}<span>${esc(label)}${sub?`<small>${esc(sub)}</small>`:''}</span><span class="ck">${ICON.check}</span></button>`;
+
+/* ================= регистрация ================= */
+const ONB=[
+  {k:'hello'},{k:'name',req:d=>d.name&&d.name.trim()},{k:'birth',skip:1},
+  {k:'stage',req:d=>d.stage},{k:'family',req:d=>d.family.length},{k:'spheres',req:d=>d.spheres.length},
+  {k:'worry',req:d=>d.worry},{k:'dream',req:d=>d.dream},{k:'rhythm',req:d=>d.time&&d.pace},{k:'fail',req:d=>d.fail},
+  {k:'restore',req:d=>d.restore.length},{k:'portrait'},{k:'goals',req:d=>d.goal},{k:'check',req:d=>d.why&&d.basis}
+];
+function renderOnb(){
+  const d=ui.od,st=ONB[ui.onb],el=$('#onbBody');
+  $('#onbProg').style.width=(ui.onb/(ONB.length-1)*100)+'%';$('#onbBack').style.visibility=ui.onb?'visible':'hidden';
+  let h='';
+  const group=(key,items,multi,max,maxmsg)=>`<div data-group="${key}" data-multi="${multi?1:0}" data-max="${max||99}" ${maxmsg?`data-maxmsg="${esc(maxmsg)}"`:''}>${items}</div>`;
+  switch(st.k){
+    case'hello':h=`<div class="hero"><canvas id="heroCv2"></canvas></div><h2>Моя реальность</h2><p class="lead">Порядок в голове — порядок в делах. Здесь ты шаг за шагом строишь свою жизнь во всех сферах и видишь, что всё не зря. Займёт 2 минуты.</p><button class="ghost" data-act="seedDemo">Посмотреть на примере</button>`;break;
+    case'name':h=`<h2>Как к тебе обращаться?</h2><p class="lead">Приложение будет говорить с тобой по имени.</p><input class="field" id="fName" maxlength="30" placeholder="Имя" value="${esc(d.name||'')}" autocomplete="given-name">`;break;
+    case'birth':h=`<h2>Когда ты родился?</h2><p class="lead">По дате соберём тёплый портрет о твоих сильных сторонах. Это для вдохновения — никаких прогнозов и советов для решений.</p><input class="field" type="date" id="fBirth" value="${esc(d.birth||'')}" max="${today()}">`;break;
+    case'stage':h=`<h2>Какой у тебя сейчас этап?</h2><p class="lead">Чтобы цели подходили твоей жизни.</p>`+group('stage',[['study','Учусь'],['job','Работаю в найме'],['business','Своё дело'],['maternity','В декрете, дети'],['search','Ищу себя'],['retired','На пенсии']].map(([v,l])=>opt(v,l,'',d.stage===v)).join(''));break;
+    case'family':h=`<h2>Кто рядом с тобой?</h2><p class="lead">Можно выбрать несколько.</p>`+group('family',[['partner','Партнёр или любимый человек'],['kids','Дети'],['parents','Родители, с которыми на связи'],['alone','Пока живу один']].map(([v,l])=>opt(v,l,'',d.family.includes(v))).join(''),1);break;
+    case'spheres':{const max=S.plus?10:LIMITS.spheres;h=`<h2>Какие сферы важны сейчас?</h2><p class="lead">Выбери до ${max}. Остальные можно добавить позже${S.plus?'':' в Плюс'}.</p>`+group('spheres',SPHERES.map(s=>opt(s.id,s.name,s.group,d.spheres.includes(s.id),s.emo)).join(''),1,max,`В базовой версии до ${max} сфер`);break}
+    case'worry':h=`<h2>Что беспокоит больше всего?</h2><p class="lead">Честный ответ поможет предложить нужную первую вершину.</p>`+group('worry',[['money','Не хватает денег'],['energy','Нет энергии и сил'],['chaos','Хаос в делах'],['people','Мало времени с близкими'],['lonely','Одиночество'],['direction','Не знаю, куда двигаться']].map(([v,l])=>opt(v,l,'',d.worry===v)).join(''));break;
+    case'dream':h=`<h2>Какая большая мечта на ближайшие годы?</h2><p class="lead">То, ради чего хочется просыпаться.</p>`+group('dream',[['house','Дом, участок или жильё'],['business','Своё дело'],['family','Семья и дети'],['health','Здоровье и форма'],['freedom','Финансовая свобода'],['growth','Рост и новые места']].map(([v,l])=>opt(v,l,'',d.dream===v)).join(''));break;
+    case'rhythm':h=`<h2>Твой ритм</h2><p class="lead">Когда тебе лучше всего действовать?</p><div class="seg" data-group="time">${[['morning','Утро'],['day','День'],['evening','Вечер']].map(([v,l])=>`<button data-v="${v}" aria-pressed="${d.time===v}">${l}</button>`).join('')}</div><label class="q" style="display:block;font-size:14px;font-weight:700;margin:20px 0 10px">Как ты обычно берёшься за дело?</label>`+group('pace',[['fast','Загораюсь и быстро делаю'],['steady','Медленно, но стабильно'],['slow','Долго собираюсь, но довожу']].map(([v,l])=>opt(v,l,'',d.pace===v)).join(''));break;
+    case'fail':h=`<h2>Что ты делаешь после неудачи?</h2><p class="lead">Без оценок. Приложение подстроит поддержку.</p>`+group('fail',[['quick','Быстро встаю и иду дальше'],['days','Переживаю несколько дней'],['quit','Бывает, бросаю начатое']].map(([v,l])=>opt(v,l,'',d.fail===v)).join(''));break;
+    case'restore':h=`<h2>Что тебя восстанавливает?</h2><p class="lead">Это будем предлагать в тяжёлые дни.</p>`+group('restore',[['nature','Природа, море, прогулки'],['sport','Спорт'],['people','Близкие люди'],['quiet','Тишина'],['travel','Поездки и новые места'],['create','Творчество']].map(([v,l])=>opt(v,l,'',d.restore.includes(v))).join(''),1);break;
+    case'portrait':{const p=portrait(d);h=`<h2>${esc(d.name)}, вот твой портрет</h2><p class="lead">С этим настроем ты пришёл сюда настраивать свою жизнь.</p><div class="portrait"><div class="stars"></div><div style="position:relative"><small>Твой портрет${p.sign?' · '+p.sign:''}</small><h3>${p.title}</h3><p>${esc(p.text)}</p><div class="tags">${p.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div><span class="note">Портрет — для вдохновения, решения он не подсказывает</span></div></div>`;break}
+    case'goals':{S.spheres=d.spheres;const sug=suggestGoals(d);ui.sug=sug;h=`<h2>С какой вершины начнём?</h2><p class="lead">Подобрали под твои ответы. Этапы и первые шаги уже внутри — всё можно поменять.</p>`+group('goal',sug.map(t=>{const s=SPH[t.sphere];return `<button class="suggest" data-v="${t.id}" aria-pressed="${d.goal===t.id}"><span class="tag c-${s.emo}"><i></i>${s.name}</span><br><b>${esc(t.name)}</b><small>${esc(t.why)} · ${t.stages.length} этапов: ${esc(t.stages.join(' → '))}</small></button>`}).join(''));break}
+    case'check':{const t=LIBO[d.goal];h=`<h2>Проверим вершину</h2><p class="lead">«${esc(t.name)}». Три коротких вопроса защищают от решений на эмоциях.</p>`+checkForm(t,d);break}
+  }
+  el.innerHTML=h;
+  const req=st.req?!st.req(d):false;
+  $('#onbNext').disabled=req;$('#onbNext').textContent=st.k==='hello'?'Начать':st.k==='check'?'Начать путь':st.k==='birth'&&!d.birth?'Пропустить':'Дальше';
+  if(st.k==='hello'){const c=$('#heroCv2');if(!ui.hero){ui.hero=new World(c);ui.hero.set(.35)}else{ui.hero.canvas=c;ui.hero.cx=c.getContext('2d');ui.hero.needSize=true}}
+  bindOnbInputs();
+}
+function checkForm(t,d){
+  const whys=['Для себя','Для семьи','Для спокойствия','Для здоровья','Для свободы'];
+  const bases=[['calc','Посчитал и проверил'],['advice','Посоветовался со знающими'],['exp','Есть опыт'],['feel','Пока только чувствую']];
+  return `<label class="q" style="display:block;font-size:14px;font-weight:700;margin:4px 0 10px">1. Зачем тебе это?</label><div class="chips" data-group="why">${whys.map(w=>`<button class="chip" data-v="${w}" aria-pressed="${d.why===w}">${w}</button>`).join('')}</div>
+  <label class="q" style="display:block;font-size:14px;font-weight:700;margin:20px 0 10px">2. На чём основано решение?</label><div class="chips" data-group="basis">${bases.map(([v,l])=>`<button class="chip" data-v="${v}" aria-pressed="${d.basis===v}">${l}</button>`).join('')}</div>
+  ${d.basis==='feel'?`<div class="banner" style="margin-top:12px">Хорошо, что честно. Первым шагом добавим «Проверить факты и цифры» — так решение станет крепче.</div>`:''}
+  <label class="q" style="display:block;font-size:14px;font-weight:700;margin:20px 0 10px">3. Как поймёшь, что дошёл?</label><div class="banner">Вершина: «${esc(t.stages[t.stages.length-1])}»${t.money?'. Нужная сумма:':''}</div>
+  ${t.money?`<input class="field" id="fMoney" inputmode="numeric" value="${esc(d.money??t.money)}" aria-label="Нужная сумма, рублей">`:''}`;
+}
+function bindOnbInputs(){
+  const d=ui.od,upd=()=>{const st=ONB[ui.onb];$('#onbNext').disabled=st.req?!st.req(d):false;if(st.k==='birth')$('#onbNext').textContent=d.birth?'Дальше':'Пропустить'};
+  const n=$('#fName');if(n){n.oninput=()=>{d.name=n.value;upd()};setTimeout(()=>n.focus(),50)}
+  const b=$('#fBirth');if(b)b.oninput=()=>{d.birth=b.value;upd()};
+  const m=$('#fMoney');if(m)m.oninput=()=>{d.money=+m.value.replace(/\D/g,'')||0};
+  $$('#onbBody [data-group] [data-v]').forEach(btn=>btn.onclick=()=>{const key=btn.closest('[data-group]').dataset.group,vals=selGroup(btn);if(vals===false)return;
+    if(key==='family'){if(btn.dataset.v==='alone'&&vals.includes('alone')){d.family=['alone'];$$('#onbBody [data-group="family"] [data-v]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.v==='alone')))}else{d.family=vals.filter(v=>v!=='alone');const al=$('#onbBody [data-v="alone"]');if(al&&btn.dataset.v!=='alone')al.setAttribute('aria-pressed','false')}}
+    else if(['spheres','restore'].includes(key))d[key]=vals;else{d[key]=vals[0];if(key==='basis'){renderOnb();return}}
+    upd()});
+}
+A.onbNext=()=>{
+  const st=ONB[ui.onb];
+  if(st.k==='check'){finishOnb();return}
+  ui.onb=Math.min(ONB.length-1,ui.onb+1);haptic('light');renderOnb();window.scrollTo(0,0);
+};
+A.onbBack=()=>{ui.onb=Math.max(0,ui.onb-1);renderOnb()};
+function finishOnb(){
+  const d=ui.od,t=LIBO[d.goal];
+  S.profile={name:d.name.trim(),birth:d.birth||'',stage:d.stage,family:d.family,worry:d.worry,dream:d.dream,time:d.time,pace:d.pace,fail:d.fail,restore:d.restore};
+  S.spheres=d.spheres;S.created=today();S.onboarded=true;
+  const g=createGoal(t,{why:d.why,basis:d.basis,money:t.money?(d.money??t.money):undefined});
+  if(d.basis==='feel')g.nextSteps=['Проверить факты и цифры',...g.nextSteps];
+  addFeed({type:'thought',kind:'grow',title:'Первый день пути',text:`Я пришёл сюда настраивать свою жизнь. Первая вершина — «${g.name}».`});
+  save();haptic('success');chime(true);go('day');toast(`${S.profile.name}, путь начат`);
+}
+
+/* ================= день ================= */
+function greeting(){const h=new Date().getHours();return h<12?'Доброе утро':h<18?'Добрый день':'Добрый вечер'}
+function renderDay(){
+  const k=today(),day=getDay(k),dt=kdate(k),tasks=day.tasks,done=tasks.filter(t=>t.status==='done').length;
+  $('#dayHead').innerHTML=`<div class="hello"><small>${WD[dt.getDay()]}, ${ruDate(k)}</small><b>${greeting()}, ${esc(S.profile.name)}</b></div><span class="pill">${ICON.flame}${streak()} ${word(streak(),W_DAY)}</span>`;
+  world.set(tasks.length?done/Math.max(3,tasks.length):0);
+  const lv=['Мир просыпается','Мир набирает свет','Мир растёт','Мир сияет','Твоя реальность в полную силу'];
+  $('#worldCenter').innerHTML=`<div class="n">${done}</div><div class="l">${word(done,W_STEP)} сегодня</div><div class="lv">${lv[Math.min(4,Math.floor(done*.75))]}</div>`;
+  let h='';
+  if(day.carry&&day.carry.length){h+=`<div class="banner">Со вчера осталось ${day.carry.length} ${word(day.carry.length,['дело','дела','дел'])}: ${esc(day.carry.map(c=>c.text).slice(0,3).join(', '))}.<div class="row" style="margin-top:8px"><button class="small-btn" data-act="carry" data-v="1">Перенести</button><button class="small-btn" style="background:transparent;border:1px solid var(--line);color:var(--ink)" data-act="carry" data-v="0">Отпустить</button></div></div>`}
+  if(!day.closed)h+=`<div class="moods" data-group="mood">${['Тяжело','Ровно','Заряжен'].map(m=>`<button data-act="mood" data-v="${m}" aria-pressed="${day.mood===m}">${m}</button>`).join('')}</div>`;
+  if(day.mood==='Тяжело'&&!day.closed){const r=(S.profile.restore||[]);const tip=r.includes('nature')?'Прогулка у воды или в парке':r.includes('quiet')?'10 минут тишины':r.includes('people')?'Позвонить близкому':'Короткая прогулка';
+    h+=`<div class="banner calm">Сегодня хватит одного главного шага. Остальное — без чувства вины. Помни: это временно. Что тебя восстанавливает: <b>${tip}</b>.</div>`}
+  const main=tasks.find(t=>t.main);
+  if(main){const g=goalById(main.goalId);h+=`<div class="card main ${main.status==='done'?'done':''}"><div class="ic">${ICON.peak}</div><div class="tx"><small>Главный шаг дня${g?' · '+esc(g.name):''}</small><b>${esc(main.text)}</b></div><button class="go" data-act="toggle" data-id="${main.id}" aria-label="${main.status==='done'?'Отменить':'Отметить сделанным'}">${main.status==='done'?ICON.check:ICON.play}</button></div>`}
+  else if(!day.closed){const sg=suggestMain();
+    if(sg)h+=`<div class="card main"><div class="ic">${ICON.peak}</div><div class="tx"><small>Предлагаю главный шаг · ${esc(goalById(sg.goalId).name)}</small><b>${esc(sg.text)}</b><div class="row" style="margin-top:10px"><button class="small-btn" data-act="takeMain">Взять</button><button class="small-btn" style="background:transparent;border:1px solid var(--line);color:var(--ink)" data-act="pickMain">Другой</button></div></div></div>`;
+    else h+=`<div class="card"><div class="empty"><b>Выбери первую вершину</b>Тогда каждый день будет главный шаг к ней.<br><br><button class="small-btn" data-act="addGoal">Выбрать вершину</button></div></div>`}
+  const rest=tasks.filter(t=>!t.main);
+  h+=`<div class="sec"><h2>Сегодня</h2><span>${rest.length?`${rest.filter(t=>t.status==='done').length} из ${rest.length}`:'нажми, что планируешь'}</span></div>`;
+  if(rest.length)h+=`<div class="card" style="padding:4px 16px">${rest.map(t=>{const s=SPH[t.sphere]||SPH.work;const st=t.status==='moved'?' · завтра':t.status==='fail'?' · опыт':'';return `<div class="task ${t.status==='done'?'done':''}"><button class="tick" data-act="toggle" data-id="${t.id}" aria-label="Отметить: ${esc(t.text)}">${ICON.check}</button><div class="tx"><b>${esc(t.text)}</b><small style="--dot:var(--${s.emo})"><i></i>${s.name}${st}</small></div>${t.status?'':`<button class="x" data-act="delTask" data-id="${t.id}" aria-label="Убрать">×</button>`}</div>`}).join('')}</div>`;
+  if(!day.closed){
+    const have=new Set(tasks.map(t=>t.text));
+    let chips=[];S.spheres.forEach(id=>SPH[id].tasks.forEach(tx=>chips.push({tx,sp:id})));
+    Object.entries(S.custom).sort((a,b)=>b[1]-a[1]).forEach(([tx])=>{if(!chips.some(c=>c.tx===tx)){const f=Object.values(S.days).flatMap(d=>d.tasks).find(t=>t.text===tx);chips.unshift({tx,sp:f?f.sphere:S.spheres[0]})}});
+    chips=chips.filter(c=>!have.has(c.tx)).slice(0,day.mood==='Тяжело'?5:12);
+    h+=`<div class="chips">${chips.map(c=>`<button class="chip" style="--dot:var(--${SPH[c.sp].emo})" data-act="addChip" data-t="${esc(c.tx)}" data-s="${c.sp}"><i></i>${esc(c.tx)}</button>`).join('')}<button class="chip add" data-act="customTask">${'+ Своё'}</button></div>`;
+    h+=`<div class="sec" style="margin-top:22px"><h2>Вечер</h2><span>1 минута</span></div><div class="grid2"><button class="btn" data-act="evening">Итог дня</button><button class="ghost" data-act="moment">Тёплый момент</button></div>`;
+  }else{
+    h+=`<div class="card" style="margin-top:16px"><div class="row"><div class="orb" style="width:36px;height:36px"></div><div><b>День закрыт</b><div class="muted" style="font-size:13px">Завтра новый шаг. Отдыхай.</div></div></div>${day.thought?`<q style="display:block;font-family:Lora,serif;font-style:italic;font-size:16px;margin-top:12px;quotes:none">${esc(day.thought)}</q>`:''}</div><button class="ghost" data-act="moment">Тёплый момент</button>`;
+  }
+  $('#dayBody').innerHTML=h;
+}
+A.mood=el=>{const d=getDay(today());d.mood=el.dataset.v;save();haptic('select');render();if(d.mood==='Тяжело')toast('Планка ниже — и это правильно')};
+A.carry=el=>{const d=getDay(today());if(el.dataset.v==='1')d.carry.forEach(c=>{if(!d.tasks.some(t=>t.text===c.text))addTask(d,{text:c.text,sphere:c.sphere,goalId:c.goalId,main:c.main&&!d.tasks.some(t=>t.main)})});d.carry=[];save();render()};
+A.takeMain=()=>{const sg=suggestMain(),d=getDay(today());addTask(d,{text:sg.text,sphere:sg.sphere,goalId:sg.goalId,main:true});haptic('light');render()};
+A.pickMain=()=>{const gs=activeGoals();let items=[];gs.forEach(g=>{const st=g.stages[stageIdx(g)];[...(g.nextSteps||[]),`Шаг к этапу «${st?st.name:''}»`].forEach(t=>items.push({t,g}))});
+  sheet(`<h3>Главный шаг дня</h3><p class="lead">Один шаг, который двигает вершину. Маленький — нормально.</p>${items.map((it,i)=>`<button class="opt" data-act="setMain" data-i="${i}" style="--dot:var(--${SPH[it.g.sphere].emo})"><span class="dot"></span><span>${esc(it.t)}<small>${esc(it.g.name)}</small></span></button>`).join('')}<label class="q">Или свой шаг</label><input class="field" id="mainTxt" placeholder="Например: позвонить в банк"><div style="height:10px"></div><button class="btn" data-act="setMainCustom">Сделать главным</button>`);ui.mainItems=items};
+A.setMain=el=>{const it=ui.mainItems[+el.dataset.i],d=getDay(today());addTask(d,{text:it.t,sphere:it.g.sphere,goalId:it.g.id,main:true});closeSheet();render()};
+A.setMainCustom=()=>{const v=$('#mainTxt').value.trim();if(!v)return;const g=activeGoals().find(x=>x.id===S.active)||activeGoals()[0],d=getDay(today());addTask(d,{text:v,sphere:g?g.sphere:S.spheres[0],goalId:g?g.id:null,main:true});closeSheet();render()};
+A.addChip=el=>{const d=getDay(today());addTask(d,{text:el.dataset.t,sphere:el.dataset.s});haptic('light');render()};
+A.delTask=el=>{const d=getDay(today());d.tasks=d.tasks.filter(t=>t.id!==el.dataset.id);save();render()};
+A.toggle=el=>{
+  const d=getDay(today()),t=d.tasks.find(x=>x.id===el.dataset.id);if(!t)return;
+  const g=t.goalId?goalById(t.goalId):null;
+  if(t.status==='done'){t.status=null;if(g&&g.log.length&&g.log[g.log.length-1].text===t.text){g.log.pop();g.steps=Math.max(0,g.steps-1);g.stepsSince=Math.max(0,(g.stepsSince||0)-1)}}
+  else{t.status='done';if(g&&!g.closed)logStep(g,t.text,SPH[t.sphere].emo);world.pulse();chime(t.main);haptic(t.main?'medium':'light');
+    toast(t.main?`Главный шаг сделан${g?' · +1 к «'+g.name+'»':''}`:'+1 шаг · мир стал ярче')}
+  save();render();
+};
+A.customTask=()=>{ui.pick=S.spheres[0];sheet(`<h3>Своё дело</h3><p class="lead">Запишется кнопкой — в следующий раз просто нажмёшь.</p><input class="field" id="ctTxt" maxlength="60" placeholder="Например: заказать субстрат"><label class="q">Сфера</label><div class="chips" data-group="sp">${SPHERES.map(s=>`<button class="chip" data-act="pickSp" data-v="${s.id}" style="--dot:var(--${s.emo})" aria-pressed="${s.id===ui.pick}"><i></i>${s.name}</button>`).join('')}</div><div style="height:16px"></div><button class="btn" data-act="saveCustom">Добавить в день</button>`);setTimeout(()=>$('#ctTxt').focus(),60)};
+A.pickSp=el=>{selGroup(el);ui.pick=el.dataset.v};
+A.saveCustom=()=>{const v=$('#ctTxt').value.trim();if(!v)return;addTask(getDay(today()),{text:v,sphere:ui.pick});closeSheet();render()};
+
+/* ---- вечер ---- */
+const REASONS=['Отказали','Не хватило времени','Не было сил','Передумал','Помешали обстоятельства'];
+const LESSONS=['Попробую иначе','Разобью на шаги поменьше','Сделаю утром первым делом','Отпущу — это не важно','Попрошу помощи'];
+A.evening=()=>{const d=getDay(today());ui.evening={};d.tasks.forEach(t=>{if(t.status!=='done')ui.evening[t.id]={s:null}});renderEvening()};
+function renderEvening(){
+  const d=getDay(today()),open=d.tasks.filter(t=>t.status!=='done'),done=d.tasks.filter(t=>t.status==='done');
+  const anyFail=Object.values(ui.evening).some(x=>x.s==='fail');
+  sheet(`<h3>Итог дня</h3><p class="lead">Сделано: ${done.length}. Любая попытка — тоже шаг.</p>
+  ${open.map(t=>{const e=ui.evening[t.id]||{};return `<div class="card" style="padding:12px 14px;margin-bottom:8px"><b style="font-size:15px">${esc(t.text)}</b><div class="seg" style="margin-top:10px">${[['done','Сделал'],['moved','Завтра'],['fail','Не вышло']].map(([v,l])=>`<button data-act="evSet" data-id="${t.id}" data-v="${v}" aria-pressed="${e.s===v}">${l}</button>`).join('')}</div>
+  ${e.s==='fail'?`<label class="q">Что произошло?</label><div class="chips">${REASONS.map(r=>`<button class="chip" data-act="evReason" data-id="${t.id}" data-v="${r}" aria-pressed="${e.r===r}">${r}</button>`).join('')}</div><label class="q">Что делаю теперь?</label><div class="chips">${LESSONS.map(r=>`<button class="chip" data-act="evLesson" data-id="${t.id}" data-v="${r}" aria-pressed="${e.l===r}">${r}</button>`).join('')}</div>`:''}</div>`}).join('')}
+  ${anyFail?`<div class="banner" style="background:color-mix(in srgb,var(--hard) 16%,transparent)"><b class="c-hard">Отказ → опыт → лучший шаг → цель.</b> Без отказов нет опыта, без опыта не дойти до вершины. Это засчитывается в путь.</div>`:''}
+  <label class="q">Мысль дня — если хочется</label><textarea class="field" id="evThought" placeholder="Что понял сегодня?">${esc(d.thought||'')}</textarea>
+  <div style="height:14px"></div><button class="btn" data-act="closeDay">Закрыть день</button>`);
+}
+A.evSet=el=>{ui.evening[el.dataset.id]=Object.assign(ui.evening[el.dataset.id]||{},{s:el.dataset.v});haptic('select');const th=$('#evThought').value;renderEvening();$('#evThought').value=th};
+A.evReason=el=>{ui.evening[el.dataset.id].r=el.dataset.v;selGroup2(el)};
+A.evLesson=el=>{ui.evening[el.dataset.id].l=el.dataset.v;selGroup2(el)};
+function selGroup2(el){$$('[data-act="'+el.dataset.act+'"][data-id="'+el.dataset.id+'"]').forEach(b=>b.setAttribute('aria-pressed',String(b===el)));haptic('select')}
+A.closeDay=()=>{
+  const d=getDay(today());let pts=0;
+  d.tasks.forEach(t=>{if(t.status==='done'){pts+=2;return}const e=ui.evening[t.id];if(!e||!e.s)return;
+    const g=t.goalId?goalById(t.goalId):null;
+    if(e.s==='done'){t.status='done';pts+=2;if(g&&!g.closed)logStep(g,t.text)}
+    else if(e.s==='moved'){t.status='moved';pts+=1}
+    else if(e.s==='fail'){t.status='fail';pts+=1;const text=`Вывод: ${e.l||'попробую иначе'}`;
+      addFeed({type:'lesson',kind:'hard',title:`${t.text}${e.r?': '+e.r.toLowerCase():''}`,text,goalId:t.goalId});
+      if(g&&!g.closed){g.log.push({date:today(),text:`${t.text}${e.r?' — '+e.r.toLowerCase():''}`,kind:'hard',lesson:e.l||'Попробую иначе'})}}});
+  const th=$('#evThought').value.trim();if(th){d.thought=th;addFeed({type:'thought',kind:'grow',title:'Мысль дня',text:th})}
+  d.closed=true;save();closeSheet();haptic('success');chime(true);world.pulse();render();toast(`День закрыт · +${pts} к пути`);
+};
+A.moment=()=>{ui.pick=S.spheres.find(id=>SPH[id].emo==='love')||'energy';sheet(`<h3>Тёплый момент</h3><p class="lead">Что хорошего было? Это попадёт в книгу жизни.</p><textarea class="field" id="mTxt" placeholder="Например: закат у моря, чай у мамы"></textarea><label class="q">О чём этот момент</label><div class="chips" data-group="sp">${SPHERES.map(s=>`<button class="chip" data-act="pickSp" data-v="${s.id}" style="--dot:var(--${s.emo})" aria-pressed="${s.id===ui.pick}"><i></i>${s.name}</button>`).join('')}</div><div style="height:16px"></div><button class="btn" data-act="saveMoment">Сохранить</button>`);setTimeout(()=>$('#mTxt').focus(),60)};
+A.saveMoment=()=>{const v=$('#mTxt').value.trim();if(!v)return;const emo=SPH[ui.pick].emo;addFeed({type:'moment',kind:emo==='joy'||emo==='grow'?'calm':emo,title:v,text:SPH[ui.pick].name});save();closeSheet();haptic('success');toast('Момент сохранён в историю');render()};
+
+/* ================= путь ================= */
+function kindsFor(g){const lit=Math.floor(goalUnits(g)),log=g.log.slice(1),base=SPH[g.sphere].emo;return Array.from({length:60},(_,i)=>i<lit&&log.length?(log[Math.min(log.length-1,Math.floor(i*log.length/Math.max(1,lit)))].kind||base):base)}
+function renderPath(){
+  const gs=activeGoals();let g=gs.find(x=>x.id===S.active)||gs[0];
+  $('#goalChips').innerHTML=gs.map(x=>`<button class="goalchip" style="--dot:var(--${SPH[x.sphere].emo})" data-act="selGoal" data-id="${x.id}" aria-pressed="${x===g}"><i></i>${esc(x.name)}</button>`).join('');
+  if(!g){mount.setGoal(0,[],5);$('#pin').style.display='none';$('#mountOv').innerHTML=`<div><b>0%</b><small>вершина не выбрана</small></div>`;
+    $('#pathBody').innerHTML=`<div class="card" style="margin-top:14px"><div class="empty"><b>Выбери вершину</b>Путь появится на горе, а каждый шаг зажжёт тропу.<br><br><button class="small-btn" data-act="addGoal">Выбрать вершину</button></div></div>`;return}
+  S.active=g.id;$('#pin').style.display='';
+  const n=g.stages.length,si=stageIdx(g),u=goalUnits(g);
+  mount.setGoal(u,kindsFor(g),n);
+  $('#pin').innerHTML=`Ты здесь<small>этап ${Math.min(n,si+1)} из ${n}</small>`;
+  const days=daysBetween(g.created,today())+1;
+  $('#mountOv').innerHTML=`<div><b>${Math.round(u/60*100)}%</b><small>пути пройдено</small></div><div style="text-align:right"><small>${days}-й ${'день'} пути</small><small>${g.steps} ${word(g.steps,W_STEP)}</small></div>`;
+  const sg=(()=>{const st=g.stages[si];const pool=g.nextSteps&&g.nextSteps.length?g.nextSteps:[`Шаг к этапу «${st?st.name:''}»`];return pool[g.steps%pool.length]})();
+  let h=`<div class="camps">${g.stages.map((s,i)=>{const done=!!s.done,now=i===si;return `<div class="camp ${done?'done':now?'now':'next'}"><small>${done?'✓ '+ruDate(s.done):i===n-1?'Вершина':'Лагерь '+(i+1)}${now?' · сейчас':''}</small><b>${esc(s.name)}</b>${now?`<button data-act="stageDone" data-id="${g.id}">${i===n-1?'Вершина взята':'Этап пройден'}</button>`:''}</div>`}).join('')}</div>`;
+  h+=`<div class="sec"><h2>Шаг к вершине</h2><span>маленький — нормально</span></div><div class="card today"><div class="tx"><small>${SPH[g.sphere].name}</small><b>${esc(sg)}</b><small style="color:var(--grow);font-weight:600;display:block;margin-top:6px">Каждый шаг зажигает тропу</small></div><button class="stepBtn" data-act="goalStep" data-id="${g.id}" data-t="${esc(sg)}" aria-label="Отметить шаг"><span>${ICON.check}Шаг</span></button></div>`;
+  h+=`<div class="card">${g.money?`<div class="meter"><div class="rw"><span>Накоплено</span><b>${fmtN(g.money.saved)} из ${fmtN(g.money.target)} ₽</b></div><div class="track"><i style="width:${Math.min(100,g.money.saved/g.money.target*100)}%;background:var(--joy)"></i></div><button class="small-btn" style="margin-top:10px" data-act="money" data-id="${g.id}">+ Взнос</button></div>`:''}<div class="meter"><div class="rw"><span>Этапы</span><b>${si} из ${n}</b></div><div class="track"><i style="width:${si/n*100}%;background:var(--grow)"></i></div></div></div>`;
+  h+=`<div class="card" style="font-size:14px;line-height:1.5"><div class="muted" style="font-size:12px">Зачем</div><b>${esc(g.why||'—')}</b><div class="muted" style="font-size:12px;margin-top:8px">На чём основано</div><b>${esc(({calc:'Посчитал и проверил',advice:'Посоветовался со знающими',exp:'Есть опыт',feel:'Пока чувство — проверяю факты'})[g.basis]||'—')}</b></div>`;
+  const log=g.log.slice(-6).reverse();
+  h+=`<div class="sec"><h2>Последние шаги</h2><span>${g.log.length} в истории</span></div><div class="card">${log.map(l=>`<div class="ev c-${l.kind||'grow'}"><span class="d"></span><div class="tx"><b>${esc(l.text)}</b>${l.lesson?`<span class="lesson">Вывод: ${esc(l.lesson)}</span>`:''}</div><time>${ruDate(l.date)}</time></div>`).join('')}</div>`;
+  $('#pathBody').innerHTML=h;
+}
+A.selGoal=el=>{S.active=el.dataset.id;save();haptic('select');render()};
+A.goalStep=el=>{const g=goalById(el.dataset.id);if(!g)return;logStep(g,el.dataset.t);
+  const d=getDay(today()),main=d.tasks.find(t=>t.main&&t.goalId===g.id&&t.status!=='done');if(main)main.status='done';else d.tasks.push({id:uid(),text:el.dataset.t,sphere:g.sphere,goalId:g.id,status:'done',main:false});
+  save();const[x,y]=mount.posAt(goalUnits(g));mount.spark(x,y,16,SPH[g.sphere].emo);haptic('light');chime(false);world.pulse();toast('+1 шаг · тропа стала длиннее');render()};
+A.money=el=>{ui.pick=el.dataset.id;sheet(`<h3>Взнос к цели</h3><p class="lead">Любая сумма двигает вершину.</p><div class="chips">${[5000,10000,15000,30000,50000].map(v=>`<button class="chip" data-act="moneyAdd" data-v="${v}">+ ${fmtN(v)}</button>`).join('')}</div><label class="q">Своя сумма</label><input class="field" id="mSum" inputmode="numeric" placeholder="Например: 7 500"><div style="height:12px"></div><button class="btn" data-act="moneyAdd">Добавить</button>`)};
+A.moneyAdd=el=>{const g=goalById(ui.pick),v=+(el.dataset.v||($('#mSum').value||'').replace(/\D/g,''));if(!g||!v)return;addMoney(g,v);closeSheet();haptic('success');chime(true);toast(`+${fmtN(v)} ₽ · ${Math.round(g.money.saved/g.money.target*100)}% суммы`);render()};
+A.stageDone=el=>{const g=goalById(el.dataset.id),si=stageIdx(g),last=si===g.stages.length-1;ui.pick=g.id;
+  sheet(`<h3>${last?'Вершина взята?':'Лагерь взят?'}</h3><p class="lead">«${esc(g.stages[si].name)}»${last?' — последний этап. Отметим победу.':''}</p><button class="btn" data-act="stageConfirm">${last?'Да, я дошёл':'Да, этап пройден'}</button><div style="height:8px"></div><button class="ghost" data-act="closeSheet">Ещё нет</button>`)};
+A.stageConfirm=()=>{const g=goalById(ui.pick);closeSheet();const u0=goalUnits(g),last=completeStage(g);
+  if(last){startCelebration(g);return}
+  const[x,y]=mount.posAt(goalUnits(g));mount.spark(x,y,40,'joy');haptic('medium');chime(true);toast('Лагерь взят — впереди следующий');render()};
+
+/* ---- добавление вершины ---- */
+A.addGoal=el=>{
+  if(!S.plus&&activeGoals().length>=LIMITS.goals){sheet(`<h3>Одна вершина за раз</h3><p class="lead">В базовой версии можно идти к одной вершине. Так фокус сильнее. В Плюс — без ограничений.</p><button class="btn" data-act="plusOn">Включить Плюс (тест)</button><div style="height:8px"></div><button class="ghost" data-act="closeSheet">Понятно</button>`);return}
+  const only=el&&el.dataset.sphere;const have=new Set(S.goals.filter(g=>!g.closed).map(g=>g.tpl));
+  const rec=suggestGoals(S.profile).filter(t=>!have.has(t.id));
+  const list=LIB.filter(t=>!have.has(t.id)&&(!only||t.sphere===only));
+  const card=t=>{const s=SPH[t.sphere];return `<button class="suggest" data-act="pickTpl" data-id="${t.id}"><span class="tag c-${s.emo}"><i></i>${s.name}</span><br><b>${esc(t.name)}</b><small>${esc(t.why)}</small></button>`};
+  sheet(`<h3>Новая вершина</h3><p class="lead">Готовые цели с этапами и первыми шагами. Или создай свою.</p><button class="ghost" data-act="customGoal">+ Своя вершина</button>${!only&&rec.length?`<label class="q">Подходит тебе</label>${rec.map(card).join('')}`:''}<label class="q">${only?SPH[only].name:'Все вершины'}</label>${list.map(card).join('')}`);
+};
+A.pickTpl=el=>{ui.check={tpl:el.dataset.id};renderCheckSheet()};
+function renderCheckSheet(){const t=LIBO[ui.check.tpl]||ui.check.custom;sheet(`<h3>Проверим вершину</h3><p class="lead">«${esc(t.name)}»</p>${checkForm(t,ui.check)}<div style="height:16px"></div><button class="btn" data-act="createGoal" ${ui.check.why&&ui.check.basis?'':'disabled'}>Начать путь</button>`);
+  $$('#sheetBody [data-group] [data-v]').forEach(b=>b.onclick=()=>{const key=b.closest('[data-group]').dataset.group;ui.check[key]=selGroup(b)[0];const m=$('#fMoney');if(m)ui.check.money=+m.value.replace(/\D/g,'')||0;renderCheckSheet()});
+  const m=$('#fMoney');if(m)m.oninput=()=>{ui.check.money=+m.value.replace(/\D/g,'')||0}}
+A.createGoal=()=>{const c=ui.check,t=LIBO[c.tpl]||c.custom;const g=createGoal(t,{why:c.why,basis:c.basis,money:t.money?(c.money??t.money):undefined,name:t.name,sphere:t.sphere,stages:t.stages});
+  if(c.basis==='feel')g.nextSteps=['Проверить факты и цифры',...(g.nextSteps||[])];save();closeSheet();haptic('success');chime(true);toast('Новая вершина на карте');go('path')};
+A.customGoal=()=>{ui.pick='home';sheet(`<h3>Своя вершина</h3><input class="field" id="cgName" placeholder="Например: построить дом"><label class="q">Сфера</label><div class="chips" data-group="sp">${SPHERES.map(s=>`<button class="chip" data-act="pickSp" data-v="${s.id}" style="--dot:var(--${s.emo})" aria-pressed="${s.id===ui.pick}"><i></i>${s.name}</button>`).join('')}</div><label class="q">5 лагерей на пути</label>${['Первый шаг сделан','Четверть пути','Половина пути','Почти у цели','Вершина'].map((p,i)=>`<input class="field cgSt" style="margin-bottom:6px" value="${p}" aria-label="Этап ${i+1}">`).join('')}<label class="q">Нужна сумма? (необязательно)</label><input class="field" id="cgMoney" inputmode="numeric" placeholder="0"><div style="height:14px"></div><button class="btn" data-act="customNext">Дальше</button>`)};
+A.customNext=()=>{const name=$('#cgName').value.trim();if(!name){toast('Назови вершину');return}const stages=$$('.cgSt').map(i=>i.value.trim()).filter(Boolean);const money=+($('#cgMoney').value||'').replace(/\D/g,'')||0;
+  ui.check={custom:{id:null,name,sphere:ui.pick,why:'',stages:stages.length>=2?stages:['Начало','Середина','Вершина'],steps:[],money:money||null}};renderCheckSheet()};
+
+/* ================= празднование ================= */
+function startCelebration(g){
+  ui.celId=g.id;document.body.classList.add('celebrating');const box=$('#celebrate');box.classList.remove('won');box.scrollTop=0;
+  $('#celSub').textContent=`${g.steps} ${word(g.steps,W_STEP)} привели тебя на вершину`;
+  $('#sndBtn').textContent=S.sound?'Звук':'Без звука';
+  const d=Math.max(1,daysBetween(g.created,g.closed||today())+1),hard=g.log.filter(l=>l.kind==='hard').length;
+  const notable=g.log.filter((l,i)=>i===0||l.kind==='hard'||l.kind==='joy').slice(-7);
+  $('#celRest').innerHTML=`<div class="card row"><div class="main" style="border:none;padding:0;background:none"><div class="ic">${ICON.peak}</div></div><div><b style="font-size:17px">${esc(g.name)}</b><div class="muted" style="font-size:12px">${ruDate(g.closed||today())} · путь начат ${ruDate(g.created)}</div></div></div>
+  <div class="bigstats"><div><b class="c-grow">${g.steps}</b><span>шагов сделано</span></div><div><b class="c-joy">${g.money?fmtN(g.money.saved):g.stages.length+' из '+g.stages.length}</b><span>${g.money?'₽ накоплено':'этапов пройдено'}</span></div><div><b class="c-hard">${hard}</b><span>трудности пройдены</span></div><div><b class="c-love">${d}</b><span>${word(d,W_DAY)} пути</span></div></div>
+  <div class="sec"><h2>Как ты сюда пришёл</h2></div><div class="card">${notable.map(l=>`<div class="ev c-${l.kind||'grow'}"><span class="d"></span><div class="tx"><b>${esc(l.text)}</b>${l.lesson?`<span class="lesson">Вывод: ${esc(l.lesson)}</span>`:''}</div><time>${ruDate(l.date)}</time></div>`).join('')}</div>
+  <div class="sec"><h2>Слова себе в этот день</h2><span>останутся в книге</span></div><textarea class="field" id="celWords" style="font-family:Lora,serif;font-style:italic;font-size:16px" placeholder="Что хочется сказать себе сейчас?">${esc(g.words||'')}</textarea>
+  <div style="height:12px"></div><button class="btn" data-act="saveWords">Сохранить в книгу жизни</button><div style="height:8px"></div><button class="ghost" data-act="closeCelebrate">Вернуться</button>`;
+  cel.onDone=()=>box.classList.add('won');
+  cel.startCelebrate(kindsFor(Object.assign({},g,{stepsSince:0})));
+  if(REDUCE)box.classList.add('won');
+}
+A.closeCelebrate=()=>{document.body.classList.remove('celebrating');cel.mode='celebrate';render()};
+A.saveWords=()=>{const g=goalById(ui.celId);g.words=$('#celWords').value.trim();const f=S.feed.find(x=>x.type==='peak'&&x.goalId===g.id);if(f)f.words=g.words;save();haptic('success');toast('Глава сохранена в книгу жизни')};
+A.toggleSound=el=>{S.sound=!S.sound;save();el.textContent=S.sound?'Звук':'Без звука'};
+A.replayPeak=el=>{const g=goalById(el.dataset.id);if(g)startCelebration(g)};
+
+/* ================= вершины ================= */
+function miniMount(p,emo){return `<svg class="mini" viewBox="0 0 62 46" aria-hidden="true"><path d="M2 44 L22 16 L30 26 L42 6 L60 44 Z" fill="var(--${emo})" opacity=".18"/><path d="M2 44 L22 16 L30 26 L42 6 L60 44" fill="none" stroke="var(--${emo})" stroke-width="1.5" opacity=".5"/><circle cx="${4+38*p}" cy="${44-38*p}" r="3.5" fill="var(--joy)"/>${p>=1?'<path d="M42 6v-6l7 2.5-7 2.5" fill="var(--joy)"/>':''}</svg>`}
+function renderPeaks(){
+  const act=activeGoals(),cl=closedGoals();let h='';
+  h+=`<div class="sec" style="margin-top:4px"><h2>В пути</h2><button class="link" data-act="addGoal">+ Новая</button></div>`;
+  h+=act.length?act.map(g=>{const p=goalUnits(g)/60;return `<button class="peakcard" data-act="openGoal" data-id="${g.id}">${miniMount(p,SPH[g.sphere].emo)}<span class="tx"><b>${esc(g.name)}</b><small>${Math.round(p*100)}% · этап ${Math.min(g.stages.length,stageIdx(g)+1)} из ${g.stages.length} · ${g.steps} ${word(g.steps,W_STEP)}</small></span></button>`}).join(''):`<div class="card"><div class="empty">Сейчас нет активной вершины.</div></div>`;
+  h+=`<div class="sec"><h2>Взятые вершины</h2><span>${cl.length}</span></div>`;
+  h+=cl.length?cl.map(g=>`<button class="peakcard closed" data-act="replayPeak" data-id="${g.id}">${miniMount(1,'joy')}<span class="tx"><b>${esc(g.name)}</b><small>${ruDate(g.closed)} · ${esc(peakSummary(g))}</small>${g.words?`<small style="display:block;font-family:Lora,serif;font-style:italic;margin-top:4px;color:var(--ink)">«${esc(g.words)}»</small>`:''}</span></button>`).join(''):`<div class="card"><div class="empty"><b>Первая вершина впереди</b>Когда дойдёшь, здесь будет салют и история пути.</div></div>`;
+  $('#peaksBody').innerHTML=h;
+}
+A.openGoal=el=>{S.active=el.dataset.id;save();go('path')};
+
+/* ================= история ================= */
+function flowData(){
+  const start=S.created||today(),span=daysBetween(start,today())+1,byWeek=span>21,buckets=[];
+  const n=byWeek?Math.min(16,Math.ceil(span/7)):Math.max(7,Math.min(21,span)),unit=byWeek?7:1;
+  for(let i=0;i<n;i++)buckets.push([0,0,0,0,0]);
+  const idx=k=>{const back=daysBetween(k,today());const b=n-1-Math.floor(back/unit);return b>=0&&b<n?b:-1};
+  Object.entries(S.days).forEach(([k,d])=>{const b=idx(k);if(b<0)return;d.tasks.forEach(t=>{if(t.status==='done')buckets[b][EMOS.indexOf(SPH[t.sphere]?SPH[t.sphere].emo:'grow')]++})});
+  const peaks=[];S.feed.forEach(f=>{const b=idx(f.date);if(b<0)return;buckets[b][EMOS.indexOf(f.kind||'grow')]+=f.type==='lesson'?1.5:1;if(f.type==='peak')peaks.push(b)});
+  return{data:buckets.map(x=>x.map(v=>v+.15)),peaks,label:byWeek?`${n} недель`:`${n} ${word(n,W_DAY)}`};
+}
+function renderHistory(){
+  const cl=closedGoals().length,moments=S.feed.filter(f=>f.type==='moment').length,days=S.created?daysBetween(S.created,today())+1:0,yr=today().slice(0,4);
+  $('#bookCover').innerHTML=`<div class="spine"></div><div class="in"><small>Книга жизни · ${esc(S.profile.name)} · глава ${yr}</small><h2>${cl?`Год, когда я <em>взял ${cl} ${word(cl,['вершину','вершины','вершин'])}</em>`:`Начало <em>моей реальности</em>`}</h2><div style="font-size:13px;color:rgba(244,241,230,.7)">Каждый шаг, радость и трудность — здесь</div><div class="nums"><div><b>${days}</b><span>${word(days,W_DAY)} в пути</span></div><div><b>${fmtN(totalDone())}</b><span>шагов</span></div><div><b>${cl}</b><span>вершин</span></div><div><b>${moments}</b><span>моментов</span></div></div></div>`;
+  const fd=flowData();flow.set(fd.data,fd.peaks);$('#flowFt').innerHTML=`<span>${fd.label} назад</span><span>сегодня</span>`;
+  const f=ui.filter;
+  $('#filters').innerHTML=[['all','Всё'],['joy','Победы'],['love','Близкие'],['calm','Тишина'],['hard','Опыт'],['grow','Мысли и путь']].map(([v,l])=>`<button class="chip" data-act="filter" data-v="${v}" aria-pressed="${f===v}" ${v!=='all'?`style="--dot:var(--${v})"`:''}>${v!=='all'?'<i></i>':''}${l}</button>`).join('');
+  const items=S.feed.filter(x=>f==='all'||x.kind===f).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  if(!items.length){$('#feed').innerHTML=`<div class="card"><div class="empty"><b>История только начинается</b>Закрывай дни, сохраняй тёплые моменты — они появятся здесь.</div></div>`;return}
+  const groups={};items.forEach(x=>{(groups[monthKey(x.date)]=groups[monthKey(x.date)]||[]).push(x)});
+  const NAMES={peak:'Вершина',stage:'Лагерь',money:'Взнос',moment:'Тёплый момент',thought:'Мысль',lesson:'Опыт через трудность',start:'Начало пути'};
+  $('#feed').innerHTML=Object.keys(groups).sort().reverse().map(m=>`<section class="month"><h3>${monthName(m+'-01')}</h3>${groups[m].map(x=>{
+    const meta=`<div class="meta c-${x.kind}"><i></i><b>${NAMES[x.type]||''}</b> · ${ruDate(x.date)}</div>`;
+    if(x.type==='peak')return `<article class="e peak">${meta}<h4>${esc(x.title)}</h4><p>${esc(x.text)}</p>${x.words?`<q style="font-size:15px;margin-top:8px">«${esc(x.words)}»</q>`:''}<button class="small-btn" style="margin-top:10px" data-act="replayPeak" data-id="${x.goalId}">Пережить момент</button></article>`;
+    if(x.type==='thought')return `<article class="e">${meta}<q>${esc(x.text)}</q></article>`;
+    if(x.type==='lesson')return `<article class="e">${meta}<h4>${esc(x.title)}</h4><span class="lesson">${esc(x.text)}</span></article>`;
+    return `<article class="e">${meta}<h4>${esc(x.title)}</h4>${x.text?`<p>${esc(x.text)}</p>`:''}</article>`}).join('')}</section>`).join('');
+}
+A.filter=el=>{ui.filter=el.dataset.v;haptic('select');renderHistory()};
+A.exportBook=()=>{
+  if(!S.plus){sheet(`<h3>Книга жизни — в Плюс</h3><p class="lead">Красивая книга по главам: вершины, тёплые моменты, мысли и опыт. Можно сохранить себе или отправить близким.</p><button class="btn" data-act="plusOn">Включить Плюс (тест)</button>`);return}
+  const o=ui.exportOpt;sheet(`<h3>Собрать книгу жизни</h3><p class="lead">Файл по главам-месяцам. Откроется в браузере, оттуда можно сохранить в PDF через «Печать».</p>
+  <div class="seg" style="margin-bottom:10px">${['Месяц','Год','Всё'].map(v=>`<button data-act="exOpt" data-k="period" data-v="${v}" aria-pressed="${o.period===v}">${v}</button>`).join('')}</div>
+  <div class="seg">${[['self','Для себя'],['family','Для близких']].map(([v,l])=>`<button data-act="exOpt" data-k="who" data-v="${v}" aria-pressed="${o.who===v}">${l}</button>`).join('')}</div>
+  <div class="set">Деньги и суммы<button class="sw" role="switch" aria-checked="${o.money}" data-act="exSw" data-k="money" aria-label="Деньги и суммы"></button></div>
+  <div class="set">Опыт через трудности и мысли<button class="sw" role="switch" aria-checked="${o.priv}" data-act="exSw" data-k="priv" aria-label="Опыт и мысли"></button></div>
+  <div style="height:14px"></div><button class="btn" data-act="buildBook">Собрать книгу</button><div id="bookPrev"></div>`)};
+A.exOpt=el=>{ui.exportOpt[el.dataset.k]=el.dataset.v;if(el.dataset.k==='who'){const fam=el.dataset.v==='family';ui.exportOpt.money=!fam;ui.exportOpt.priv=!fam}A.exportBook()};
+A.exSw=el=>{const k=el.dataset.k;ui.exportOpt[k]=!ui.exportOpt[k];el.setAttribute('aria-checked',String(ui.exportOpt[k]))};
+function bookHtml(){
+  const o=ui.exportOpt,from=o.period==='Месяц'?addDays(today(),-31):o.period==='Год'?addDays(today(),-366):'0000';
+  let items=S.feed.filter(x=>x.date>=from).filter(x=>(o.money||x.type!=='money')&&(o.priv||!['lesson','thought'].includes(x.type)));
+  const groups={};items.sort((a,b)=>a.date.localeCompare(b.date)).forEach(x=>{(groups[monthKey(x.date)]=groups[monthKey(x.date)]||[]).push(x)});
+  const col={joy:'#C98A1E',grow:'#2F7A55',love:'#D0644F',calm:'#3B7FA8',hard:'#9A6A43'};
+  const ch=Object.keys(groups).map(m=>`<section><h2>${monthName(m+'-01')}</h2>${groups[m].map(x=>`<div class="it" style="border-color:${col[x.kind]||'#999'}"><small>${ruDate(x.date)}</small><h3>${esc(x.title)}</h3>${x.text?`<p>${esc(o.money?x.text:x.text.replace(/\d[\d\s]*₽?/g,'…'))}</p>`:''}${x.words?`<blockquote>«${esc(x.words)}»</blockquote>`:''}</div>`).join('')}</section>`).join('');
+  return `<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Книга жизни — ${esc(S.profile.name)}</title><style>body{font-family:Georgia,serif;max-width:720px;margin:0 auto;padding:40px 24px;color:#1c241f;background:#faf7f0;line-height:1.55}.cover{text-align:center;padding:80px 20px;border-bottom:2px solid #C98A1E;margin-bottom:40px}.cover h1{font-size:40px;margin:0}.cover p{color:#6b6b6b}.nums{display:flex;justify-content:center;gap:28px;margin-top:24px;font-family:system-ui}.nums b{display:block;font-size:26px;color:#C98A1E}h2{font-size:26px;margin:40px 0 14px;border-bottom:1px solid #ddd;padding-bottom:6px}.it{border-left:4px solid;padding:6px 0 6px 14px;margin:0 0 16px;page-break-inside:avoid}.it small{color:#888;font-family:system-ui}.it h3{margin:2px 0;font-size:18px}.it p{margin:2px 0;color:#444}blockquote{font-style:italic;margin:6px 0 0;color:#8a5f14}</style></head><body><div class="cover"><p>Книга жизни</p><h1>${esc(S.profile.name)}</h1><p>${o.period==='Всё'?'Весь путь':o.period==='Год'?'Последний год':'Последний месяц'} · собрано ${ruDate(today())} ${today().slice(0,4)}</p><div class="nums"><div><b>${closedGoals().length}</b>вершин</div><div><b>${fmtN(totalDone())}</b>шагов</div><div><b>${S.feed.filter(f=>f.type==='moment').length}</b>тёплых моментов</div></div></div>${ch||'<p>Пока пусто — история начинается.</p>'}</body></html>`;
+}
+A.buildBook=async()=>{const html=bookHtml(),name=`Книга-жизни-${S.profile.name}.html`;haptic('success');
+  $('#bookPrev').innerHTML=`<div class="banner" style="margin-top:12px">Книга собрана: ${S.feed.length} ${word(S.feed.length,['запись','записи','записей'])}.</div>`;
+  if(DOWNLOADS){try{await DOWNLOADS.save({filename:name,data:html});toast('Книга сохранена')}catch(e){if(e&&e.code!=='declined')toast('Не удалось сохранить файл здесь')}}
+  else{toast('Скоро книга будет приходить файлом в чат от бота')}};
+
+/* ================= профиль ================= */
+function wheelNow(){const mk=monthKey(today());if(!S.wheel[mk]){const prev=Object.keys(S.wheel).sort().pop();S.wheel[mk]=prev?Object.assign({},S.wheel[prev]):Object.fromEntries(SPHERES.map(s=>[s.id,5]));save()}return S.wheel[mk]}
+function wheelPrev(){const mk=monthKey(today());const k=Object.keys(S.wheel).filter(x=>x<mk).sort().pop();return k?S.wheel[k]:null}
+function rankName(n){return n>=6?'Мастер пути':n>=3?'Строитель':n>=1?'Путник':'Искатель'}
+function renderProfile(){
+  const p=portrait(S.profile),cl=closedGoals().length,days=S.created?daysBetween(S.created,today())+1:0,used=S.mentor[monthKey(today())]||0,left=S.plus?'без лимита':`осталось ${Math.max(0,LIMITS.mentor-used)} из ${LIMITS.mentor}`;
+  const hard=S.feed.filter(f=>f.type==='lesson').length,tm={morning:'утро',day:'день',evening:'вечер'}[S.profile.time]||'утро';
+  let h=`<div class="row" style="margin:4px 2px 14px;gap:14px"><div style="width:62px;height:62px;border-radius:50%;padding:3px;background:conic-gradient(var(--grow) 0 40%,var(--joy) 40% 62%,var(--love) 62% 78%,var(--calm) 78% 92%,var(--hard) 92% 100%);flex:none"><div style="width:100%;height:100%;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-family:Unbounded;font-weight:700;font-size:22px">${esc((S.profile.name||'Я')[0].toUpperCase())}</div></div><div><h1 style="font-family:Unbounded;font-size:20px">${esc(S.profile.name)}</h1><div class="muted" style="font-size:13px;margin-top:3px">С нами ${days} ${word(days,W_DAY)} · твоё время — ${tm}</div><span class="pill" style="margin-top:6px;padding:4px 10px;font-size:12px">${ICON.peak.replace('<svg','<svg width="12" height="12"')}${rankName(cl)} · ${cl} ${word(cl,['вершина','вершины','вершин'])}</span></div></div>`;
+  h+=`<div class="portrait"><div class="stars"></div><div style="position:relative"><small>Твой портрет${p.sign?' · '+p.sign:''}</small><h3>${p.title}</h3><p>${esc(p.text)}</p><div class="tags">${p.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div><span class="note">Портрет — для вдохновения, решения он не подсказывает</span></div></div>`;
+  h+=`<div class="stats3"><div class="st"><b class="c-joy">${streak()}</b><span>${word(streak(),W_DAY)} подряд</span></div><div class="st"><b class="c-grow">${fmtN(totalDone())}</b><span>шагов всего</span></div><div class="st"><b class="c-hard">${hard}</b><span>трудностей пройдено</span></div></div>`;
+  // колесо
+  const cur=wheelNow(),prev=wheelPrev(),sel=SPHERES[ui.wsel],CX=170,CY=170,R0=38,R1=128,N=10,ang=i=>-Math.PI/2+i*2*Math.PI/N,rOf=v=>R0+(R1-R0)*v/10;
+  const arc=(r0,r1,a0,a1)=>{const q=(r,a)=>[CX+Math.cos(a)*r,CY+Math.sin(a)*r];const[x0,y0]=q(r1,a0),[x1,y1]=q(r1,a1),[x2,y2]=q(r0,a1),[x3,y3]=q(r0,a0);return `M${x0} ${y0}A${r1} ${r1} 0 0 1 ${x1} ${y1}L${x2} ${y2}A${r0} ${r0} 0 0 0 ${x3} ${y3}Z`};
+  let sv='';for(let k=1;k<=5;k++)sv+=`<circle cx="${CX}" cy="${CY}" r="${R0+(R1-R0)*k/5}" fill="none" stroke="var(--line)"/>`;
+  SPHERES.forEach((s,i)=>{const a0=ang(i)+.035,a1=ang(i+1)-.035,am=(a0+a1)/2;sv+=`<path d="${arc(R0,R1,a0,a1)}" fill="var(--${s.emo})" opacity=".08"/><path data-act="wsel" data-i="${i}" style="cursor:pointer" d="${arc(R0,rOf(cur[s.id]),a0,a1)}" fill="var(--${s.emo})" opacity="${i===ui.wsel?1:.7}"/><text class="lbl ${i===ui.wsel?'on':''}" data-act="wsel" data-i="${i}" x="${CX+Math.cos(am)*(R1+18)}" y="${CY+Math.sin(am)*(R1+18)}" text-anchor="middle" dominant-baseline="middle">${s.name}</text>`});
+  if(prev){const pts=SPHERES.map((s,i)=>{const am=(ang(i)+ang(i+1))/2,r=rOf(prev[s.id]);return `${CX+Math.cos(am)*r},${CY+Math.sin(am)*r}`}).join(' ');sv+=`<polygon points="${pts}" fill="none" stroke="var(--ink)" stroke-opacity=".45" stroke-width="1.5" stroke-dasharray="4 4"/>`}
+  sv+=`<circle cx="${CX}" cy="${CY}" r="${R0-6}" fill="var(--bg)" stroke="var(--line)"/>`;
+  const avg=SPHERES.reduce((a,s)=>a+cur[s.id],0)/N,delta=prev?cur[sel.id]-prev[sel.id]:null;
+  const low=SPHERES.filter(s=>!(s.id==='kids'&&!(S.profile.family||[]).includes('kids'))&&!(s.id==='partner'&&!(S.profile.family||[]).includes('partner'))).sort((a,b)=>cur[a.id]-cur[b.id])[0];
+  h+=`<div class="sec"><h2>Колесо жизни</h2><span>${MON_NOM[kdate(today()).getMonth()].toLowerCase()} · нажми на сферу</span></div><div class="card"><div class="wheelBox"><svg viewBox="0 0 340 340" role="img" aria-label="Колесо жизни">${sv}</svg><div class="mid"><b>${avg.toFixed(1).replace('.',',')}</b><span>баланс</span></div></div>
+  <div class="row" style="margin-top:10px;padding-top:12px;border-top:1px solid var(--line)"><div style="flex:1"><div class="muted" style="font-size:12px">${sel.group}</div><b style="font-size:16px">${sel.name}</b>${delta!==null?`<div style="font-size:12px;font-weight:700;color:${delta>0?'var(--grow)':delta<0?'var(--hard)':'var(--muted)'}">${delta>0?'+'+delta:delta<0?'−'+(-delta):'без изменений'} за месяц</div>`:''}</div><div class="stepper"><button data-act="wstep" data-v="-1" aria-label="Меньше">−</button><output>${cur[sel.id]}</output><button data-act="wstep" data-v="1" aria-label="Больше">+</button></div></div>
+  <div class="banner" style="margin:12px 0 0">Меньше всего внимания сейчас получает <b class="c-joy">${low.name}</b> — без упрёков, просто картина месяца.<br><button class="small-btn" data-act="addGoal" data-sphere="${low.id}">Вершина для сферы «${low.name}»</button></div></div>`;
+  // наставник
+  h+=`<div class="sec"><h2>Наставник</h2><span>${left}</span></div><div class="card"><div class="row"><div class="orb"></div><div style="flex:1"><b>Спроси, как у друга</b><div class="muted" style="font-size:12px;margin-top:2px">${SAMPLE?'Знает твои вершины и путь, отвечает спокойно и по делу':'В этой версии — примерные ответы. В Telegram здесь будет ИИ'}</div></div></div>
+  <div class="chips" style="margin-top:12px">${MENTOR_Q.slice(0,3).map(q=>`<button class="chip" data-act="ask" data-q="${esc(q)}">${esc(q)}</button>`).join('')}<button class="chip add" data-act="chat">Свой вопрос</button></div></div>`;
+  // подписка
+  h+=`<div class="card" style="border-color:var(--joy);background:linear-gradient(150deg,var(--soft),var(--surface) 60%)"><div class="row" style="justify-content:space-between"><b style="font-family:Unbounded;font-size:17px">Моя реальность<span class="c-joy">+</span></b><button class="sw" role="switch" aria-checked="${S.plus}" data-act="plusToggle" aria-label="Плюс для теста"></button></div>
+  <div class="muted" style="font-size:13px;margin:6px 0 10px">${S.plus?'Плюс включён для теста':'390 ₽ в месяц · 7 дней бесплатно · переключатель — для теста'}</div>
+  <div style="display:grid;grid-template-columns:1fr auto auto;gap:7px 14px;font-size:13px"><span></span><span class="muted" style="font-size:11px;font-weight:700">База</span><span class="muted" style="font-size:11px;font-weight:700">Плюс</span>${[['Утро, вечер, шаги','✓','✓'],['Сферы жизни','3','10'],['Вершин одновременно','1','∞'],['Вопросы наставнику','5/мес','∞'],['Книга жизни в файл','—','✓']].map(r=>`<span>${r[0]}</span><span class="muted" style="text-align:center">${r[1]}</span><span class="c-grow" style="text-align:center;font-weight:800">${r[2]}</span>`).join('')}</div></div>`;
+  // настройки
+  h+=`<div class="card" style="padding:4px 16px"><div class="set">Звук и вибрация<button class="sw" role="switch" aria-checked="${S.sound}" data-act="soundToggle" aria-label="Звук"></button></div><button class="set" data-act="spheres">Мои сферы<span>${S.spheres.map(id=>SPH[id].name).join(', ')}</span></button><button class="set" data-act="nextDay">Перейти на следующий день<span>для теста</span></button><button class="set" data-act="seedDemo">Заполнить примером<span>для теста</span></button><button class="set" data-act="resetAsk" style="color:var(--love)">Начать заново<span>стереть данные</span></button></div>${memOnly?'<p class="muted" style="font-size:12px;text-align:center">Данные хранятся только до закрытия страницы</p>':''}`;
+  $('#profileBody').innerHTML=h;
+}
+A.wsel=el=>{ui.wsel=+el.dataset.i;haptic('select');renderProfile()};
+A.wstep=el=>{const cur=wheelNow(),id=SPHERES[ui.wsel].id;cur[id]=Math.max(1,Math.min(10,cur[id]+ +el.dataset.v));save();haptic('light');renderProfile()};
+A.plusToggle=()=>{S.plus=!S.plus;save();haptic('success');render()};
+A.plusOn=()=>{S.plus=true;save();closeSheet();haptic('success');toast('Плюс включён для теста');render()};
+A.soundToggle=()=>{S.sound=!S.sound;save();render()};
+A.nextDay=()=>{S.dayOffset=(S.dayOffset||0)+1;save();toast(`Теперь ${ruDate(today())}`);go('day')};
+A.resetAsk=()=>sheet(`<h3>Начать заново?</h3><p class="lead">Все вершины, дни и история будут стёрты на этом устройстве.</p><button class="btn" style="background:var(--love)" data-act="reset">Да, стереть</button><div style="height:8px"></div><button class="ghost" data-act="closeSheet">Отмена</button>`);
+A.reset=()=>{S=DEF();try{localStorage.removeItem(KEY)}catch(e){}ui.onb=0;ui.od={restore:[],family:[],spheres:[]};closeSheet();render()};
+A.spheres=()=>{const max=S.plus?10:LIMITS.spheres;sheet(`<h3>Мои сферы</h3><p class="lead">До ${max}${S.plus?'':' в базовой версии'}.</p><div data-group="sp" data-multi="1" data-max="${max}" data-maxmsg="В базовой версии до ${max} сфер">${SPHERES.map(s=>opt(s.id,s.name,s.group,S.spheres.includes(s.id),s.emo)).join('')}</div><button class="btn" data-act="saveSpheres">Сохранить</button>`);
+  $$('#sheetBody [data-group] [data-v]').forEach(b=>b.onclick=()=>selGroup(b))};
+A.saveSpheres=()=>{const v=$$('#sheetBody [data-group] [aria-pressed="true"]').map(b=>b.dataset.v);if(!v.length)return;S.spheres=v;save();closeSheet();render()};
+
+/* ---- наставник ---- */
+const MENTOR_Q=['Как не бросить после отказа?','Что делать в тяжёлый день?','Как дойти до своей вершины?','Как совмещать дело и семью?'];
+const MENTOR_DEMO={
+  'Как не бросить после отказа?':'Отказ — это не приговор, а информация. Вечером запиши: что произошло, что это дало и что делаешь иначе. Ты уже проходил трудности и продолжал — это и есть твоя сила. Шаг на завтра: одно маленькое действие по той же задаче, но другим способом.',
+  'Что делать в тяжёлый день?':'Опусти планку: оставь один главный шаг, остальное перенеси без чувства вины. Сделай то, что тебя восстанавливает, и не делай выводов о всей жизни по одному дню. Если тяжело долго, поговори с близким или специалистом — это нормально и сильно. Шаг на сегодня: 10 минут тишины или прогулка.',
+  'Как дойти до своей вершины?':'Проверь, зачем тебе это и на чём основано решение. Дальше — лагеря: 4–6 этапов, и на каждый маленькие шаги, которые по силам уже сегодня. Если шаг не делается три дня подряд, он слишком большой — дроби. Шаг на завтра: назначь один главный шаг утром.',
+  'Как совмещать дело и семью?':'Раздели день: основное дело — в лучшие часы, дальше время для близких. Ставь встречу с родными в план так же серьёзно, как встречу с клиентом. Работа ради семьи даёт силы, только если семья видит тебя, а не только результат. Шаг на неделю: один вечер без телефона с близкими.'
+};
+function mentorContext(){
+  const d=S.days[today()];
+  const data={имя:S.profile.name,этап:S.profile.stage,рядом:S.profile.family,беспокоит:S.profile.worry,мечта:S.profile.dream,ритм:S.profile.pace,после_неудачи:S.profile.fail,восстанавливает:S.profile.restore,
+    сферы:S.spheres.map(id=>SPH[id].name),
+    вершины:activeGoals().map(g=>({название:g.name,зачем:g.why,этап:`${stageIdx(g)+1} из ${g.stages.length}: ${(g.stages[stageIdx(g)]||{}).name||'вершина'}`,шагов:g.steps,деньги:g.money?`${g.money.saved} из ${g.money.target}`:null})),
+    взято_вершин:closedGoals().map(g=>g.name),сегодня:d?{настроение:d.mood,дела:d.tasks.map(t=>`${t.text} — ${t.status||'в плане'}`)}:null,
+    последний_опыт:S.feed.filter(f=>f.type==='lesson').slice(-3).map(f=>`${f.title}. ${f.text}`),серия_дней:streak()};
+  return `Ты — наставник в приложении «Моя реальность». Приложение помогает человеку наводить порядок в жизни маленькими ежедневными шагами к своим вершинам (целям) во всех сферах: здоровье, близкие, дело, деньги, дом, отдых. Принципы: любая попытка — победа; отказ — это опыт, а не провал; маленький шаг лучше рывка; решения не на эмоциях, а с проверкой «на чём это основано».
+Отвечай по-русски, на «ты», тепло и спокойно, как мудрый друг. Коротко: 3–6 предложений, без markdown и заголовков. Заканчивай одним конкретным маленьким шагом на сегодня или завтра. Опирайся на данные человека, но не пересказывай их. Не ставь диагнозов и не давай финансовых гарантий; при серьёзных вопросах здоровья, денег или права мягко советуй специалиста. Если человек пишет о желании навредить себе или о полной безнадёжности — в первую очередь поддержи и предложи обратиться к близким или на линию помощи.
+Данные человека: ${JSON.stringify(data).slice(0,5000)}`;
+}
+A.chat=()=>renderChat();
+A.ask=el=>{renderChat();sendMentor(el.dataset.q)};
+function renderChat(){
+  const used=S.mentor[monthKey(today())]||0,left=S.plus?'∞':Math.max(0,LIMITS.mentor-used);
+  sheet(`<div class="row" style="padding-bottom:10px;border-bottom:1px solid var(--line)"><div class="orb" style="width:34px;height:34px"></div><b style="flex:1">Наставник</b><span class="c-joy" style="font-size:12px;font-weight:800" id="chatLeft">${left===0?'лимит месяца':left+' '+(left==='∞'?'':'осталось')}</span></div>
+  <div class="msgs" id="msgs" aria-live="polite">${S.chat.length?S.chat.map(m=>`<div class="m ${m.role==='user'?'u':'a'}">${esc(m.content)}</div>`).join(''):`<div class="m a">Привет, ${esc(S.profile.name)}. О чём подумаем?</div>`}</div>
+  <div class="chips" style="margin:6px 0 10px">${MENTOR_Q.map(q=>`<button class="chip" data-act="askIn" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>
+  <div class="row"><input class="field" id="chatIn" placeholder="Напиши вопрос" maxlength="600"><button class="small-btn" style="padding:13px 16px" data-act="sendChat">→</button></div>`);
+  const m=$('#msgs');m.scrollTop=m.scrollHeight;$('#chatIn').onkeydown=e=>{if(e.key==='Enter')A.sendChat()};
+}
+A.askIn=el=>sendMentor(el.dataset.q);
+A.sendChat=()=>{const v=$('#chatIn').value.trim();if(v){$('#chatIn').value='';sendMentor(v)}};
+async function sendMentor(q){
+  if(ui.chatBusy)return;const mk=monthKey(today()),used=S.mentor[mk]||0,msgs=$('#msgs');
+  const add=(cls,t)=>{const d=document.createElement('div');d.className='m '+cls;d.textContent=t;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d};
+  if(!S.plus&&used>=LIMITS.mentor){add('a','Вопросы в этом месяце закончились. В «Моя реальность+» наставник отвечает без ограничений.');return}
+  add('u',q);S.chat.push({role:'user',content:q});
+  const b=add('a wait','Думаю…');ui.chatBusy=true;
+  let answer='';
+  if(SAMPLE){
+    try{const turns=[{role:'user',content:mentorContext()},...S.chat.slice(-9).map(m=>({role:m.role,content:m.content}))];
+      const r=await SAMPLE(turns,{cache:false,onText:({text})=>{b.classList.remove('wait');b.textContent=text;msgs.scrollTop=msgs.scrollHeight}});answer=r.text}
+    catch(e){answer=(e&&e.text)||'';if(!answer){answer=MENTOR_DEMO[q]||'Сейчас не получилось ответить. Попробуй чуть позже.';if(e&&['not_granted','sampling_disabled','not_declared','capability_disabled'].includes(e.code))SAMPLE=null}}
+  }else{await new Promise(r=>setTimeout(r,REDUCE?0:700));answer=MENTOR_DEMO[q]||'Хороший вопрос. Разбей его на один маленький шаг, который можно сделать уже сегодня, и отметь его в дне. В Telegram-версии здесь ответит ИИ-наставник, который знает твой путь.'}
+  b.classList.remove('wait');b.textContent=answer;S.chat.push({role:'assistant',content:answer});S.chat=S.chat.slice(-20);
+  S.mentor[mk]=used+1;save();ui.chatBusy=false;haptic('light');
+  const l=$('#chatLeft');if(l){const left=S.plus?'∞':Math.max(0,LIMITS.mentor-used-1);l.textContent=left===0?'лимит месяца':left+(left==='∞'?'':' осталось')}
+}
+
+/* ================= пример данных ================= */
+A.seedDemo=()=>{
+  const keepPlus=S.plus;S=DEF();S.plus=keepPlus;S.onboarded=true;const T=today();S.created=addDays(T,-58);
+  S.profile={name:'Алексей',birth:'1990-05-12',stage:'business',family:['partner','parents'],worry:'money',dream:'house',time:'morning',pace:'steady',fail:'quick',restore:['nature','sport']};
+  S.spheres=['work','health','parents'];
+  const at=k=>{const r=S.feed[S.feed.length-1];if(r)r.date=k};
+  // закрытая вершина
+  const run=createGoal(LIBO.run10,{why:'Для здоровья',basis:'exp'});run.created=addDays(T,-56);run.log[0].date=run.created;S.feed[S.feed.length-1].date=run.created;
+  run.stages.forEach((s,i)=>{s.done=addDays(T,-48+i*6)});run.steps=34;run.closed=addDays(T,-24);run.words='Колено напомнило о себе, но я не бросил.';
+  run.log.push({date:addDays(T,-44),text:'Лагерь взят: 3 км без остановки',kind:'joy'},{date:addDays(T,-38),text:'Тянуло колено — перенёс пробежку',kind:'hard',lesson:'Разминка 10 минут'},{date:addDays(T,-30),text:'Новый рекорд: 8 км',kind:'joy'},{date:addDays(T,-24),text:'Лагерь взят: 10 км',kind:'joy'});
+  S.feed.push({id:uid(),date:addDays(T,-38),type:'lesson',kind:'hard',title:'Пробежка: тянуло колено',text:'Вывод: сначала разминка 10 минут',goalId:run.id});
+  S.feed.push({id:uid(),date:run.closed,type:'peak',kind:'joy',title:run.name,text:peakSummary(run),goalId:run.id,words:run.words});
+  // активная вершина
+  const land=createGoal(LIBO.land,{why:'Для семьи',basis:'calc',money:1500000});land.created=addDays(T,-40);land.log[0].date=land.created;S.feed[S.feed.length-1].date=land.created;
+  land.stages[0].done=addDays(T,-30);land.stages[1].done=addDays(T,-12);land.steps=27;land.stepsSince=4;land.money.saved=620000;
+  land.log.push({date:addDays(T,-30),text:'Лагерь взят: Район выбран',kind:'joy'},{date:addDays(T,-21),text:'Продавец поднял цену в последний момент',kind:'hard',lesson:'Документы проверяю до задатка'},{date:addDays(T,-16),text:'Смотрели участок с мамой',kind:'love'},{date:addDays(T,-12),text:'Лагерь взят: Участки посмотрены',kind:'joy'},{date:addDays(T,-3),text:'Взнос 15 000 ₽',kind:'joy'},{date:addDays(T,-1),text:'Позвонил в МФЦ по документам',kind:'grow'});
+  S.feed.push({id:uid(),date:addDays(T,-30),type:'stage',kind:'joy',title:'Лагерь взят: Район выбран',text:land.name,goalId:land.id},{id:uid(),date:addDays(T,-21),type:'lesson',kind:'hard',title:'Участок: продавец поднял цену',text:'Вывод: документы проверяю до задатка',goalId:land.id},{id:uid(),date:addDays(T,-12),type:'stage',kind:'joy',title:'Лагерь взят: Участки посмотрены',text:land.name,goalId:land.id},{id:uid(),date:addDays(T,-3),type:'money',kind:'joy',title:'+15 000 ₽ · '+land.name,text:'Накоплено 620 000 из 1 500 000',goalId:land.id});
+  S.feed.push({id:uid(),date:addDays(T,-16),type:'moment',kind:'love',title:'Смотрели участок с мамой, пили чай прямо на траве',text:'Родители'},{id:uid(),date:addDays(T,-9),type:'moment',kind:'calm',title:'Велопрогулка по косе, 42 км',text:'Энергия'},{id:uid(),date:addDays(T,-4),type:'moment',kind:'calm',title:'Закат у моря без телефона',text:'Энергия'},{id:uid(),date:addDays(T,-6),type:'thought',kind:'grow',title:'Мысль дня',text:'Порядок в голове — порядок в делах. Сегодня впервые почувствовал, что всё не зря.'},{id:uid(),date:addDays(T,-2),type:'lesson',kind:'hard',title:'Клиенты: отказ за день до поставки',text:'Вывод: беру предоплату 30%'});
+  // дни
+  const pool=[['Клиенты','work'],['База','work'],['Звонки','work'],['Тренировка','health'],['Пробежка','health'],['Позвонить маме','parents'],['Заехать на чай','parents'],['Прогулка','energy'],['Мойка и заправка','home']];
+  for(let i=45;i>=1;i--){const k=addDays(T,-i),n=2+((i*7)%4),tasks=[];for(let j=0;j<n;j++){const[t,s]=pool[(i*3+j*5)%pool.length];if(tasks.some(x=>x.text===t))continue;tasks.push({id:uid(),text:t,sphere:s,goalId:null,main:false,status:(i+j)%5===0?'moved':'done'})}
+    S.days[k]={mood:['Ровно','Заряжен','Ровно','Тяжело'][i%4],tasks,thought:'',closed:true,carry:[]};}
+  S.custom={'Клиенты':12,'База':10,'Заказать субстрат':2};
+  const mk=monthKey(T),pk=monthKey(addDays(T,-32));
+  S.wheel[pk]={health:7,energy:6,growth:6,parents:6,partner:6,kids:3,friends:5,work:7,money:6,home:6};
+  S.wheel[mk]={health:8,energy:7,growth:6,parents:8,partner:5,kids:3,friends:4,work:8,money:7,home:8};
+  S.active=land.id;save();closeSheet();haptic('success');toast('Пример загружен — можно тестировать');go('day');
+};
+
+/* ================= старт ================= */
+$$('.tab').forEach(t=>t.setAttribute('data-act','tab'));
+go(S.onboarded?'day':'day');
+
+</script>
+</body>
+</html>
